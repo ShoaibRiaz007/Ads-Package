@@ -1,0 +1,59 @@
+using UnityEngine;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+namespace SH.Ads.Base
+{
+    [System.Serializable]
+    public class  Advertiser
+    {
+        [SerializeField] public SupportedAdvertisers advertiser;
+        [SerializeField] public string ID;
+        [SerializeField] public bool IsAndroid;
+        [SerializeField] public bool IsIOS;
+
+        [SerializeField] public List<AD> Ads = new List<AD>();
+        [SerializeField] public int order;
+
+        BaseManager manager;
+        public IEnumerator Initialize()
+        {
+            if (AdSettings.RemoveAd)
+                yield break;
+
+            if (manager == null)
+            {
+                Type type = Type.GetType("SH.Ads." + advertiser + ".Manager");
+                if (type != null)
+                {
+                    manager = Activator.CreateInstance(type) as BaseManager;
+                   yield return manager.Initialize(this, AdSettings.IsForChildren,AdSettings.AgeGroupRating);
+                }
+                else
+                    UnityEngine.Debug.LogError("No type found. Finding type {" + "SH.Ads." + advertiser + ".Manager}");
+            }
+        }
+        public bool ShowAd(AdType type)
+        {
+            if (AdSettings.RemoveAd)
+                return true;
+
+            foreach (var tem in Ads)
+                 tem.ShowAd(type);
+
+            return IsAdAvailable(type);
+        }
+        bool IsAdAvailable(AdType type)
+        {
+            for(int i = 0; i < Ads.Count; i++)
+            {
+                if (Ads[i].adType == type)
+                    return Ads[i].IsAvailable;
+            }
+
+            return false;
+        }
+
+    }
+}
