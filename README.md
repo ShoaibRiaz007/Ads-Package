@@ -40,8 +40,8 @@ There are multiple solutions available for ads integration in any project, but t
 - [x] [Facebook [Meta]](#)
 - [ ] [Ironsource (currently working)](#)
 - [ ] [Firebase Integration](#)
-- [ ] Remote Config
-- [ ] Database (For daily limiting ads for each advertiser and ad type for new accounts to avoid Ads limit)
+  - [ ] Remote Config
+  - [ ] Database (For daily limiting ads for each advertiser and ad type for new accounts to avoid Ads limit)
 - [ ] [AppLovin](#)
 - [ ] [Chartboost](#)
 - [ ] [Heyzap](#)
