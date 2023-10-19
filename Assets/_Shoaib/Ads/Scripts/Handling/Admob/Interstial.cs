@@ -1,5 +1,6 @@
 #if Admob
 using GoogleMobileAds.Api;
+using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
 using UnityEngine;
 
@@ -24,7 +25,7 @@ namespace SH.Ads.Admob
         }
         protected override void Load()
         {
-             if (adLoading || !IsIntialized)
+            if (adLoading || !IsIntialized || !ConsentInformation.CanRequestAds())
                 return;
 
             if ( IDs.Count > 0)

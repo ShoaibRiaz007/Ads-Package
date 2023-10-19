@@ -19,5 +19,32 @@ MonoBehaviour:
   m_TestDeviceIDs:
   - 9BB8D0B4AA378E369C38045F4D4A2A7667A0F3AF
   - SIMULATOR
-  advertisers: []
-  m_RewardedAdsPrefab: {fileID: 0}
+  advertisers:
+  - advertiser: 3
+    ID: 85460dcd
+    IsAndroid: 1
+    IsIOS: 0
+    Ads:
+    - adType: 0
+      adIds:
+      - 
+      loadAtStart: 1
+      loadAfterClose: 0
+    - adType: 1
+      adIds:
+      - 
+      loadAtStart: 0
+      loadAfterClose: 0
+    - adType: 2
+      adIds:
+      - 
+      loadAtStart: 1
+      loadAfterClose: 1
+    - adType: 4
+      adIds:
+      - 
+      loadAtStart: 1
+      loadAfterClose: 1
+    order: 0
+  m_RewardedAdsPrefab: {fileID: 6483712108991058417, guid: 73af15fcde1e0e9498a27916b21ab7fc,
+    type: 3}

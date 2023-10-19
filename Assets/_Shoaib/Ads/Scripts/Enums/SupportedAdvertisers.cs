@@ -7,7 +7,7 @@ namespace SH.Ads
         Admob = 0,
         Facebook = 1,
         AdColony = 2,
-        //IronSource = 3
+        IronSource = 3,
         // Chartboost = 4,
         // Heyzap = 5,
         // AppLovin = 6,

@@ -67,6 +67,9 @@ namespace SH
                     case Ads.SupportedAdvertisers.Facebook:
                         isInsalled = Assembly.Load("Assembly-CSharp")?.GetType("AudienceNetwork.AudienceNetworkAds") != null;
                         break;
+                    case Ads.SupportedAdvertisers.IronSource:
+                        isInsalled = Assembly.Load("Assembly-CSharp")?.GetType("IronSource") != null;
+                        break;
                     default:
                         Debug.LogError("Not Implemented yet");
                         isInsalled = false;
@@ -142,6 +145,22 @@ namespace SH
                         }
                     }
                     break;
+                case Ads.SupportedAdvertisers.IronSource:
+                    assembly = Assembly.Load("Assembly-CSharp");
+                    if (assembly != null)
+                    {
+                        Type type = assembly.GetType("IronSource");
+                        if (type != null)
+                        {
+                            var propertyInfo = type.GetField("UNITY_PLUGIN_VERSION", BindingFlags.Public | BindingFlags.Static);
+                            if (propertyInfo != null)
+                            {
+                                version = "Version " + propertyInfo.GetValue(null);
+                                Versions.Add(advertiser, version);
+                            }
+                        }
+                    }
+                    break;
 
                 case Ads.SupportedAdvertisers.Unity:
                     version = "Version " + PackageCurrentVersion("com.unity.ads");
@@ -187,6 +206,9 @@ namespace SH
                     return;
                 case Ads.SupportedAdvertisers.Facebook:
                     Application.OpenURL("https://developers.facebook.com/docs/audience-network/setting-up/platform-steup/unity/add-sdk/");
+                    return;
+                case Ads.SupportedAdvertisers.IronSource:
+                    Application.OpenURL("https://github.com/ironsource-mobile/Unity-sdk");
                     return;
             }
         }

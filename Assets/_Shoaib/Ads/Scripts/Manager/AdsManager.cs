@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using UnityEngine;
-
+#if IronSource
+using IrosourceAgent = IronSource;
+#endif
 namespace SH.Ads
 {
     /// <summary>
@@ -11,6 +13,11 @@ namespace SH.Ads
     {
         internal static Action<string, float> OnUserEarnedReward;
 
+        static AdsManager()
+        {
+            OnUserEarnedReward = null;
+        }
+        
         static BGRunner _instance = null;
         internal static BGRunner BGRunnerInstance
         {
@@ -41,6 +48,15 @@ namespace SH.Ads
                             return;
                     }
                 }
+
+
+            }
+
+            private void OnApplicationPause(bool pause)
+            {
+#if IronSource
+                IrosourceAgent.Agent.onApplicationPause(pause);
+#endif
             }
 
             public new void StartCoroutine(IEnumerator function)
@@ -92,6 +108,7 @@ namespace SH.Ads
             {
                 Debug.Log("Ads Status : Initializing " + t.advertiser);
                 yield return t.Initialize();
+                Debug.Log("Ads Status : Initilized " + t.advertiser);
             }
             OnComplete?.Invoke();
         }

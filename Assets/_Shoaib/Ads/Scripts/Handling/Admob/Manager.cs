@@ -1,7 +1,10 @@
 #if Admob
 using GoogleMobileAds.Api;
+using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
+using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SH.Ads.Admob
@@ -11,6 +14,7 @@ namespace SH.Ads.Admob
     /// </summary>
     internal class Manager : BaseManager
     {
+        bool loadingConcent = true;
         internal override IEnumerator Initialize(Advertiser advertiser, bool isForChildren, string ageGroup)
         {
             yield return IsNetworkAvailable();
@@ -31,7 +35,14 @@ namespace SH.Ads.Admob
                 tagForUnderAge = TagForUnderAgeOfConsent.Unspecified;
                 contentRating = MaxAdContentRating.ToMaxAdContentRating(ageGroup);
             }
+            SetupUMPForm();
+            while (loadingConcent)
+                yield return null;
 
+            if(ConsentInformation.ConsentStatus == ConsentStatus.Required && ConsentInformation.ConsentStatus != ConsentStatus.Obtained)
+            {
+                Debug.LogError("Ad Status : UMP concent required but didn't obtained");
+            }
 
             var requestConfiguration = new RequestConfiguration();
             requestConfiguration.TagForChildDirectedTreatment = tagFororChildren;
@@ -57,11 +68,11 @@ namespace SH.Ads.Admob
                     {
                         case AdapterState.NotReady:
                             // The adapter initialization did not complete.
-                            Debug.LogFormat("Adapter: {0} : {1} not ready.", map.Key, map.Value);
+                            Debug.LogFormat("Ad Status : Adapter: {0} : {1} not ready.", map.Key, map.Value);
                             break;
                         case AdapterState.Ready:
                             // The adapter was successfully initialized.
-                            Debug.LogFormat("Adapter: {0} : {1} ready.", map.Key, map.Value);
+                            Debug.LogFormat("Ad Status : Adapter: {0} : {1} ready.", map.Key, map.Value);
                             break;
                     }
                 }
@@ -73,6 +84,77 @@ namespace SH.Ads.Admob
             while (!completed)
                 yield return null;
         }
+        // Start is called before the first frame update
+
+        void SetupUMPForm()
+        {
+            ConsentRequestParameters request = null;
+            if (AdSettings.TestMode)
+            {
+                var debugSettings = new ConsentDebugSettings
+                {
+                    DebugGeography = DebugGeography.EEA,
+                    TestDeviceHashedIds = AdSettings.TestDevices,
+                };
+                request = new ConsentRequestParameters
+                {
+                    TagForUnderAgeOfConsent = AdSettings.IsForChildren,
+                     ConsentDebugSettings = debugSettings
+                };
+            }
+            else
+            {
+                request = new ConsentRequestParameters
+                {
+                    TagForUnderAgeOfConsent = AdSettings.IsForChildren,
+                };
+            }
+            ConsentInformation.Update(request, OnConsentInfoUpdated);
+        }
+
+
+        void OnConsentInfoUpdated(FormError error)
+        {
+            if (error != null)
+            {
+                Debug.LogError(error);
+                return;
+            }
+            if (ConsentInformation.IsConsentFormAvailable())
+            {
+                LoadConsentForm();
+            }
+        }
+
+        void LoadConsentForm()
+        {
+            ConsentForm.Load(OnLoadConsentForm);
+        }
+
+        private void OnLoadConsentForm(ConsentForm form, FormError error)
+        {
+            if (error != null)
+            {
+                Debug.LogError("Ad Status : Error : " + error.Message);
+                return;
+            }
+            if (ConsentInformation.ConsentStatus == ConsentStatus.Required)
+                form.Show(OnShowForm);
+            else
+                loadingConcent = false;
+        }
+
+        void OnShowForm(FormError error)
+        {
+            if (error != null)
+            {
+                Debug.LogError("Ad Status : Error : "+error.Message);
+                return;
+            }
+            loadingConcent = false;
+            Debug.Log("Ad Status : UMP form updated. Status : " + ConsentInformation.ConsentStatus );
+        }
     }
+    
 }
 #endif
