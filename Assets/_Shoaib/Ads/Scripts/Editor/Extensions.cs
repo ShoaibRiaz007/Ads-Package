@@ -6,6 +6,8 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 using SH.Ads.Editor;
+using SH.Ads.Base;
+
 namespace SH
 {
     public static class Extensions
@@ -83,7 +85,52 @@ namespace SH
 
             
         }
+        public static void UpdateAdmobSettings(this Advertiser advertiser)
+        {
+            var settingType = Assembly.Load("GoogleMobileAds.Editor")?.GetType("GoogleMobileAds.Editor.GoogleMobileAdsSettings");
+            if (settingType != null)
+            {
+                var settings = Resources.Load("GoogleMobileAdsSettings");
+                if(!settings)
+                {
+                    EditorUtility.DisplayDialog("No google settings found. ","Can you add google settings and try again. You can do that by selecting \n Assets->Google Mobile Ads->Settings...", "OK");
+                    return;
+                }
+                PropertyInfo propertyInfo;
+                if (advertiser.IsAndroid)
+                {
+                    propertyInfo = settingType.GetProperty("GoogleMobileAdsAndroidAppId");
+                    if (propertyInfo != null)
+                    {
+                        propertyInfo.SetValue(settings, advertiser.ID, null);
+                    }
+                }
+                else if(advertiser.IsIOS)
+                {
+                    propertyInfo = settingType.GetProperty("GoogleMobileAdsIOSAppId");
+                    if (propertyInfo != null)
+                    {
+                        propertyInfo.SetValue(settings, advertiser.ID, null);
+                    }
+                }
+                propertyInfo = settingType.GetProperty("DelayAppMeasurementInit");
+                if (propertyInfo != null)
+                {
+                    propertyInfo.SetValue(settings, true, null);
+                }
+                propertyInfo = settingType.GetProperty("OptimizeInitialization");
+                if (propertyInfo != null)
+                {
+                    propertyInfo.SetValue(settings, true, null);
+                }
+                propertyInfo = settingType.GetProperty("OptimizeAdLoading");
+                if (propertyInfo != null)
+                {
+                    propertyInfo.SetValue(settings, true, null);
+                }
 
+            }
+        }
 
         public static string InstalledVersion(this Ads.SupportedAdvertisers advertiser)
         {

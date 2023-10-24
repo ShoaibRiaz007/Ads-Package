@@ -70,9 +70,9 @@ namespace SH.Ads
             EditorGUILayout.LabelField("Manage Advertisers", EditorStyles.boldLabel);
             
             advertiserScrollPos = EditorGUILayout.BeginScrollView(advertiserScrollPos, EditorStyles.helpBox);
-            foreach (var advertiser in adSettings.advertisers)
+            for(int i=0;i< adSettings.advertisers.Count;i++)
             {
-                DisplayAdvertiser(advertiser);
+                DisplayAdvertiser(adSettings.advertisers[i]);
             }
             EditorGUILayout.EndScrollView();
             Footer();
@@ -167,7 +167,7 @@ namespace SH.Ads
                 selectedAdType = availableAdTypes[selectedIndex];
             }
         }
-
+        string OldID = string.Empty;
         private void DisplayAdvertiser(Advertiser advertiser)
         {
             EditorGUILayout.Space();
@@ -197,6 +197,13 @@ namespace SH.Ads
 
             advertiser.ID=EditorGUILayout.TextField(new GUIContent("Advertiser ID:", "Unique ID for the advertiser"), advertiser.ID.ToString());
             advertiser.order=EditorGUILayout.IntField(new GUIContent("Order :", "Priorty of this advertiser lower is better"), advertiser.order);
+
+            if(advertiser.advertiser == SupportedAdvertisers.Admob && OldID!= advertiser.ID)// Update AD ID in google admob settings
+            {
+                OldID = advertiser.ID;
+                advertiser.UpdateAdmobSettings();
+            }
+
             adSettings.advertisers = adSettings.advertisers.OrderBy(a => a.order).ToList();
 
             EditorGUILayout.BeginHorizontal();

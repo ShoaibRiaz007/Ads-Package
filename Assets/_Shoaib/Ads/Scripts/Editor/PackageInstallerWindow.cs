@@ -15,7 +15,7 @@ namespace SH.Ads.Editor
     {
         const string DependenceisPath = "Assets/_Shoaib/Ads/Dependencies";
         const string UnityAd = "com.unity.ads";
-        static bool ImportingInProgress=false,InstallingUnityPackage=false;
+        static   bool ImportingInProgress=false,InstallingUnityPackage=false;
         static List<string> files = new List<string>();
         static ListRequest InstalledPackages;
         static AddRequest InstallPackage;
@@ -24,8 +24,12 @@ namespace SH.Ads.Editor
         public static void ShowWindow()
         {
             GetWindow<PackageInstallerWindow>("Install Manager");
-            ListFilesInFolder(DependenceisPath);
+        }
+        private void OnFocus()
+        {
             Extensions.CheckForInstalledPackages();
+            ListFilesInFolder(DependenceisPath);
+            ImportingInProgress = false;
         }
         static void ListFilesInFolder(string path)
         {
@@ -80,6 +84,11 @@ namespace SH.Ads.Editor
                         if (path.Contains("audience"))
                             ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
                     return;
+                case SupportedAdvertisers.IronSource:
+                    foreach (var path in files)
+                        if (path.Contains("IronSource"))
+                            ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
+                    return;
                 case SupportedAdvertisers.Unity:
                     InstalledUnityPackage(UnityAd);
                     ShowOption(advertiser.IsInstalled());
@@ -97,7 +106,7 @@ namespace SH.Ads.Editor
                 AssetDatabase.importPackageCancelled += ImportPackageCanceled;
                 AssetDatabase.importPackageStarted += ImportPackageStarted;
                 AssetDatabase.importPackageFailed += ImportPackageFailed;
-                AssetDatabase.ImportPackage(path, true);
+                AssetDatabase.ImportPackage(path,true);
             }
             
             EditorGUILayout.EndHorizontal();
@@ -171,8 +180,6 @@ namespace SH.Ads.Editor
             AssetDatabase.importPackageCancelled -= ImportPackageCanceled;
             AssetDatabase.importPackageStarted -= ImportPackageStarted;
             AssetDatabase.importPackageFailed -= ImportPackageFailed;
-            Extensions.CheckForInstalledPackages();
-            ListFilesInFolder(DependenceisPath);
         }
         private void ImportPackageCanceled(string packageName)
         {
@@ -182,7 +189,6 @@ namespace SH.Ads.Editor
             AssetDatabase.importPackageCancelled -= ImportPackageCanceled;
             AssetDatabase.importPackageStarted -= ImportPackageStarted;
             AssetDatabase.importPackageFailed -= ImportPackageFailed;
-            ListFilesInFolder(DependenceisPath);
         }
         private void ImportPackageStarted(string packageName)
         {
@@ -196,7 +202,7 @@ namespace SH.Ads.Editor
             AssetDatabase.importPackageCancelled -= ImportPackageCanceled;
             AssetDatabase.importPackageStarted -= ImportPackageStarted;
             AssetDatabase.importPackageFailed -= ImportPackageFailed;
-            ListFilesInFolder(DependenceisPath);
+            
         }
     }
 }
