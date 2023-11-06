@@ -11,7 +11,9 @@ namespace SH.Ads.Base
         static Transform Canvas = null;
         static GameObject VideoRewardPlaceHolder;
         static Text VideoRewardPlacholderText;
-
+        /// <summary>
+        /// Ads Manager Canvas transform
+        /// </summary>
         protected Transform CanvasTransform
         {
             get
@@ -35,7 +37,7 @@ namespace SH.Ads.Base
                 return Canvas;
             }
         }
-        public static bool TestMode => AdSettings.TestMode;
+        protected static bool TestMode => Ads.AdSettings.TestMode;
         /// <summary>
         /// IDs of the ad
         /// </summary>
@@ -152,7 +154,6 @@ namespace SH.Ads.Base
                     Debug.LogError("Ad Status : In provided prefab you have not included 'Text' component in Rewarded Video Prefab childrens");
                     yield break;
                 }
-
                 Time.timeScale = 0;
                 VideoRewardPlaceHolder.gameObject.SetActive(true);
                 for (int i = 3; i > 0; i--)
@@ -162,6 +163,7 @@ namespace SH.Ads.Base
                 }
                 VideoRewardPlaceHolder.gameObject.SetActive(false);
                 OnComplete?.Invoke();
+                Time.timeScale = 1;
             }
            
         }

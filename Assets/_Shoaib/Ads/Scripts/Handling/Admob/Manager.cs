@@ -2,9 +2,7 @@
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SH.Ads.Admob
@@ -121,14 +119,9 @@ namespace SH.Ads.Admob
                 return;
             }
             if (ConsentInformation.IsConsentFormAvailable())
-            {
-                LoadConsentForm();
-            }
-        }
-
-        void LoadConsentForm()
-        {
-            ConsentForm.Load(OnLoadConsentForm);
+                ConsentForm.Load(OnLoadConsentForm);
+            else
+                loadingConcent = false;
         }
 
         private void OnLoadConsentForm(ConsentForm form, FormError error)

@@ -1,6 +1,6 @@
 using SH.Ads.Base;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace SH.Ads
@@ -9,6 +9,16 @@ namespace SH.Ads
     public class AdSettings : ScriptableObject
     {
         static AdSettings _instance = null;
+
+        static AdSettings Instance 
+        { 
+            get 
+            { 
+                if (_instance == null)
+                    _instance = Resources.Load<AdSettings>("AdSetting");
+                return _instance;
+            }
+        }
 
         public enum AppAgeRatting { G,PG,T,MA}
 
@@ -26,35 +36,35 @@ namespace SH.Ads
         [SerializeField, Header("If null then default assets would be used"), Header("UI Prefabs")]
         GameObject m_RewardedAdsPrefab;
 
-        internal static  List<Advertiser> Advertisers => _instance?.advertisers; 
+        internal static  List<Advertiser> Advertisers => Instance?.advertisers; 
         private void OnValidate()
         {
-            advertisers = advertisers.OrderBy(a=> a.order).ToList();
-        }
-
-        private void OnEnable()
-        {
-            // Load the instance in the OnEnable method.
             if (_instance == null)
             {
                 _instance = Resources.Load<AdSettings>("AdSetting");
             }
-
-            // Other initialization code if needed.
         }
 
-        public static bool RemoveAd { get => PlayerPrefs.GetInt("AdsRemove", 0) == 1; set => PlayerPrefs.GetInt("AdsRemove", value ? 1 : 0); }
-        public static bool GDPRConcent { get => PlayerPrefs.GetInt("AdsNPAConcent", 0) == 1; set => PlayerPrefs.GetInt("AdsNPAConcent", value ?1 : 0);}
-        public static bool CCPAConsent { get => PlayerPrefs.GetInt("AdsCCPAConsent", 0) == 1; set => PlayerPrefs.GetInt("AdsCCPAConsent", value ? 1 : 0); }
+        private void OnEnable()
+        {
+            if (_instance == null)
+            {
+                _instance = Resources.Load<AdSettings>("AdSetting");
+            }
+        }
+
+        [field: NonSerialized] public static bool RemoveAd { get => PlayerPrefs.GetInt("AdsRemove", 0) == 1; set => PlayerPrefs.GetInt("AdsRemove", value ? 1 : 0); }
+        [field: NonSerialized] public static bool GDPRConcent { get => PlayerPrefs.GetInt("AdsNPAConcent", 0) == 1; set => PlayerPrefs.GetInt("AdsNPAConcent", value ?1 : 0);}
+        [field: NonSerialized] public static bool CCPAConsent { get => PlayerPrefs.GetInt("AdsCCPAConsent", 0) == 1; set => PlayerPrefs.GetInt("AdsCCPAConsent", value ? 1 : 0); }
                 
-        internal static bool IsForChildren => _instance? _instance.m_IsForChildren:false;
-        public static string AgeGroupRating=> _instance?.m_AgeRating.ToString();
-        public static bool TestMode => _instance? _instance.m_TestMode:true;
+        [field:NonSerialized]internal static bool IsForChildren => _instance? _instance.m_IsForChildren:false;
+        [field: NonSerialized] public static string AgeGroupRating=> _instance?.m_AgeRating.ToString();
+        [field: NonSerialized] public static bool TestMode => _instance? _instance.m_TestMode:true;
 
-        public static List<string> TestDevices => _instance?.m_TestDeviceIDs;
+        [field: NonSerialized] public static List<string> TestDevices => _instance?.m_TestDeviceIDs;
 
-        public static float RewardAmount = _instance? _instance.m_RewardAmountForRewardedAds:500;
+        [field: NonSerialized] public static float RewardAmount = _instance? _instance.m_RewardAmountForRewardedAds:500;
 
-        public static GameObject RewardedAdsPrefab => _instance?.m_RewardedAdsPrefab;
+        [field: NonSerialized] public static GameObject RewardedAdsPrefab => _instance?.m_RewardedAdsPrefab;
     }
 }

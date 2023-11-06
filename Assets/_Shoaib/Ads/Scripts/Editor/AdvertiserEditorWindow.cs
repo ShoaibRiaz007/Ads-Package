@@ -53,6 +53,17 @@ namespace SH.Ads
                 AssetDatabase.SaveAssets();
                 Selection.activeObject = adSettings;
             }
+
+            for (int i = 0; i < adSettings.advertisers.Count; i++)
+            {
+                if (adSettings.advertisers[i].advertiser == SupportedAdvertisers.Admob)// Update AD ID in google admob settings
+                {
+                    OldID = adSettings.advertisers[i].ID;
+                    adSettings.advertisers[i].UpdateAdmobSettings();
+                    break;
+                }
+
+            }
         }
         private void OnDisable()
         {
