@@ -87,6 +87,7 @@ namespace SH.Ads.IronSource
             if (IsAdAvailable)
             {
                 IronsourceAgent.Agent.showRewardedVideo(IDs[count]);
+                LocalAdShown = true;
             }
             else
             {

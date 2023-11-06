@@ -47,6 +47,7 @@ namespace SH.Ads.Unity
             if (IsAdAvailable)
             {
                 Advertisement.Show(IDs[count], this);
+                LocalAdShown = true;
             }
             else
                 Load();

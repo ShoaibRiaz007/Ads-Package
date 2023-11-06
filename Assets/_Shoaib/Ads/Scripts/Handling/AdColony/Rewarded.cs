@@ -68,6 +68,7 @@ namespace SH.Ads.AdColony
                 {
                     ColonyAd.OnRewardGranted += OnUserReward;
                     ColonyAd.ShowAd(adView);
+                    LocalAdShown = true;
                 }));
             }
             else

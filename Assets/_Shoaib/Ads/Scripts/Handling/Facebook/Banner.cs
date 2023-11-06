@@ -71,7 +71,6 @@ namespace SH.Ads.Facebook
                 return;
             if (IsAdAvailable)
             {
-                LocalAdShown = true;
                 if(adType == AdType.Banner)
                     adInstance.Show(AdPosition.TOP);
                 else

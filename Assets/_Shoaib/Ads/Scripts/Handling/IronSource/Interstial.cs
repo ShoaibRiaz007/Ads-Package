@@ -88,6 +88,7 @@ namespace SH.Ads.IronSource
             if (IsAdAvailable)
             {
                 IronsourceAgent.Agent.showInterstitial();
+                LocalAdShown = true;
             }
             else
             {

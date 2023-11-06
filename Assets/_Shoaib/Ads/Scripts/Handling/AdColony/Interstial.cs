@@ -60,7 +60,10 @@ namespace SH.Ads.AdColony
                 return;
 
             if (IsAdAvailable)
+            {
+                LocalAdShown = true;
                 ColonyAd.ShowAd(adView);
+            }
             else
                 Load();
 

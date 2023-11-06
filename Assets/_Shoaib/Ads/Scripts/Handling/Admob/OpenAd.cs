@@ -58,6 +58,12 @@ namespace SH.Ads.Admob
             if (!OpenAdTime)
                 return;
 
+            if (LocalAdShown)//Don't show or load open ad if Local ad is shown
+            {
+                LocalAdShown = false;
+                return;
+            }
+
             if (IsAdAvailable)
             {
                 LocalAdShown = false;
