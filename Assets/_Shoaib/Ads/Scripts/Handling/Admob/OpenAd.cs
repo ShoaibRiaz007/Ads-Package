@@ -154,6 +154,11 @@ namespace SH.Ads.Admob
 
             placeHolder.gameObject.AddComponent<UnityEngine.UI.Image>().color = Color.black;
             placeHolder.gameObject.SetActive(false);
+
+
+#if UNITY_EDITOR
+            UnityEngine.SceneManagement.SceneManager.activeSceneChanged += (v,a)=> placeHolder.gameObject.SetActive(false);
+#endif
         }
     }
 }

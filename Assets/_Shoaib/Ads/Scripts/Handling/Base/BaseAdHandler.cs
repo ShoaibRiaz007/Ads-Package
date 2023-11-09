@@ -26,7 +26,7 @@ namespace SH.Ads.Base
                     tem.referenceResolution = new Vector2(Screen.width, Screen.height);
                     Canvas tem0 = Canvas.gameObject.GetComponent<Canvas>();
                     tem0.renderMode = RenderMode.ScreenSpaceOverlay;
-                    tem0.sortingOrder = 32767;
+                    tem0.sortingOrder = 32766;
                     var Container = new GameObject("Container").AddComponent<RectTransform>();
                     Container.transform.parent = CanvasTransform;
                     Container.UpdateRectForSafeArea();

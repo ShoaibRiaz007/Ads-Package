@@ -17,14 +17,14 @@ namespace SH.Ads.Admob
         protected internal override bool IsAdAvailable => IsIntialized  && bannerView!=null;
         internal override void Intialize(AD ad)
         {
-            CreatePlaceHolder();
+           
             IDs = ad.adIds;
             adType = ad.adType;
             IsIntialized = true;
             loadAfterClose = ad.loadAfterClose;
             if (ad.loadAtStart)
                 Load();
-
+            CreatePlaceHolder();
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
         }
         protected override void Load()

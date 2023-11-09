@@ -27,7 +27,7 @@ namespace SH.Ads.Piplines
             }
         }
 
-        [SerializeField] public List<CustomAdvertiser> m_AdRules =new List<CustomAdvertiser>();
+        [HideInInspector] public List<CustomAdvertiser> m_AdRules =new List<CustomAdvertiser>();
 
         public override string Name => "Custom Waterfall Pipline";
         public override string Description => 
