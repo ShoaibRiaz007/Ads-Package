@@ -7,6 +7,7 @@ using System.IO;
 using System.Collections.Generic;
 using SH.Ads.Editor;
 using SH.Ads.Base;
+using SH.Ads;
 
 namespace SH
 {
@@ -249,7 +250,7 @@ namespace SH
                     Application.OpenURL("https://github.com/AdColony/AdColony-Unity-Plugin");
                     return;
                 case Ads.SupportedAdvertisers.Unity:
-                    PackageInstallerWindow.ShowWindow();
+                    AdvertiserEditorWindow.ShowPanel<InstallPackage>();
                     return;
                 case Ads.SupportedAdvertisers.Facebook:
                     Application.OpenURL("https://developers.facebook.com/docs/audience-network/setting-up/platform-steup/unity/add-sdk/");

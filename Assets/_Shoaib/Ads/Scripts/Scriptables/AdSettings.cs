@@ -1,6 +1,10 @@
 using SH.Ads.Base;
+using SH.Ads.Piplines;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 namespace SH.Ads
@@ -15,7 +19,7 @@ namespace SH.Ads
             get 
             { 
                 if (_instance == null)
-                    _instance = Resources.Load<AdSettings>("AdSetting");
+                    _instance = Resources.Load<AdSettings>(nameof(AdSettings));
                 return _instance;
             }
         }
@@ -30,13 +34,23 @@ namespace SH.Ads
         [SerializeField, Header("Ads Setting")] float m_RewardAmountForRewardedAds = 500;
         [SerializeField,Tooltip("Show Test Ads")] bool m_TestMode ;
         [SerializeField]List<string> m_TestDeviceIDs = new List<string>();
-        [HideInInspector]public List<Advertiser> advertisers = new List<Advertiser>();
-
+        [HideInInspector] public IPipeline CurrentPipline;
 
         [SerializeField, Header("If null then default assets would be used"), Header("UI Prefabs")]
         GameObject m_RewardedAdsPrefab;
 
-        internal static  List<Advertiser> Advertisers => Instance?.advertisers; 
+
+
+        internal static IEnumerator IntializeAdsHandler(Action OnComplete=null)
+        {
+            yield return Instance.CurrentPipline.Intialize();
+
+            OnComplete?.Invoke();
+        }
+
+        internal static void AdCalling(AdType adType) => Instance.CurrentPipline.ShowAd(adType);
+
+
         private void OnValidate()
         {
             if (_instance == null)
@@ -66,5 +80,27 @@ namespace SH.Ads
         [field: NonSerialized] public static float RewardAmount = _instance? _instance.m_RewardAmountForRewardedAds:500;
 
         [field: NonSerialized] public static GameObject RewardedAdsPrefab => _instance?.m_RewardedAdsPrefab;
+
+
+
+#if UNITY_EDITOR
+        const string JSON_SAVE_PATH = "Assets/_Shoaib/Ads/Json/config.json";
+        public static new void SetDirty()
+        {
+            UnityEditor.EditorUtility.SetDirty(Instance);
+        }
+
+        internal static void AfterDeserialize()
+        {
+            Instance.CurrentPipline=JsonUtility.FromJson<CustomWaterfall>(File.ReadAllText(JSON_SAVE_PATH));
+        }
+
+        internal static void BeforeSerialize()
+        {
+            string json = JsonUtility.ToJson(Instance.CurrentPipline as CustomWaterfall, true);
+            File.WriteAllText(JSON_SAVE_PATH, json);
+            AssetDatabase.Refresh();
+        }
+#endif
     }
 }

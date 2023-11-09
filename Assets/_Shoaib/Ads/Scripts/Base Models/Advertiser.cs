@@ -16,6 +16,11 @@ namespace SH.Ads.Base
         [SerializeField] public List<AD> Ads = new List<AD>();
         [SerializeField] public int order;
 
+#if UNITY_EDITOR
+        [NonSerialized]public bool Folded = false;
+#endif
+
+
         BaseManager manager;
         public IEnumerator Initialize()
         {

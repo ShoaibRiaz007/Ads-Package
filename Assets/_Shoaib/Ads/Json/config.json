@@ -1,25 +1,18 @@
 {
-    "m_IsForChildren": false,
-    "m_AgeRating": 0,
-    "m_RewardAmountForRewardedAds": 500.0,
-    "m_TestMode": true,
-    "m_TestDeviceIDs": [
-        "9BB8D0B4AA378E369C38045F4D4A2A7667A0F3AF",
-        "SIMULATOR"
-    ],
-    "advertisers": [
+    "Advertisers": [
         {
             "advertiser": 0,
-            "ID": "",
+            "ID": "This is test to check values",
             "IsAndroid": true,
             "IsIOS": false,
             "Ads": [
                 {
                     "adType": 0,
                     "adIds": [
+                        "",
                         ""
                     ],
-                    "loadAtStart": true,
+                    "loadAtStart": false,
                     "loadAfterClose": false
                 },
                 {
@@ -35,60 +28,27 @@
                     "adIds": [
                         ""
                     ],
-                    "loadAtStart": true,
-                    "loadAfterClose": true
+                    "loadAtStart": false,
+                    "loadAfterClose": false
                 },
                 {
                     "adType": 3,
                     "adIds": [
                         ""
                     ],
-                    "loadAtStart": true,
-                    "loadAfterClose": true
-                },
-                {
-                    "adType": 4,
-                    "adIds": [
-                        ""
-                    ],
-                    "loadAtStart": true,
-                    "loadAfterClose": true
+                    "loadAtStart": false,
+                    "loadAfterClose": false
                 },
                 {
                     "adType": 5,
                     "adIds": [
                         ""
                     ],
-                    "loadAtStart": true,
-                    "loadAfterClose": true
-                }
-            ],
-            "order": -1
-        },
-        {
-            "advertiser": 1,
-            "ID": "",
-            "IsAndroid": true,
-            "IsIOS": false,
-            "Ads": [
-                {
-                    "adType": 2,
-                    "adIds": [
-                        ""
-                    ],
                     "loadAtStart": false,
                     "loadAfterClose": false
                 },
                 {
                     "adType": 4,
-                    "adIds": [
-                        ""
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                },
-                {
-                    "adType": 0,
                     "adIds": [
                         ""
                     ],
@@ -97,75 +57,32 @@
                 }
             ],
             "order": 0
-        },
-        {
-            "advertiser": 9,
-            "ID": "",
-            "IsAndroid": true,
-            "IsIOS": false,
-            "Ads": [
-                {
-                    "adType": 2,
-                    "adIds": [
-                        ""
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                },
-                {
-                    "adType": 0,
-                    "adIds": [
-                        ""
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                },
-                {
-                    "adType": 4,
-                    "adIds": [
-                        ""
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                }
-            ],
-            "order": 31
-        },
-        {
-            "advertiser": 2,
-            "ID": "app185a7e71e1714831a49ec7",
-            "IsAndroid": true,
-            "IsIOS": false,
-            "Ads": [
-                {
-                    "adType": 0,
-                    "adIds": [
-                        "vz785bc8d42d9c43fdaf"
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                },
-                {
-                    "adType": 2,
-                    "adIds": [
-                        "vz06e8c32a037749699e7050"
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                },
-                {
-                    "adType": 4,
-                    "adIds": [
-                        "vz1fd5a8b2bf6841a0a4b826"
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                }
-            ],
-            "order": 35
         }
     ],
-    "m_RewardedAdsPrefab": {
-        "instanceID": 25428
-    }
+    "m_AdRules": [
+        {
+            "m_Advertiser": 0,
+            "m_AdType": 0
+        },
+        {
+            "m_Advertiser": 0,
+            "m_AdType": 1
+        },
+        {
+            "m_Advertiser": 0,
+            "m_AdType": 2
+        },
+        {
+            "m_Advertiser": 0,
+            "m_AdType": 3
+        },
+        {
+            "m_Advertiser": 0,
+            "m_AdType": 4
+        },
+        {
+            "m_Advertiser": 0,
+            "m_AdType": 5
+        }
+    ]
 }

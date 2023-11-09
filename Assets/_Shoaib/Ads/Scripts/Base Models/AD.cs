@@ -11,7 +11,9 @@ namespace SH.Ads.Base
         [SerializeField] public List<string> adIds = new List<string>();
         [SerializeField] public bool loadAtStart=false,loadAfterClose=false;
         private BaseAdHandler adHandler;
-
+#if UNITY_EDITOR
+        [NonSerialized] public bool Folded = false;
+#endif
         public void Intialize(SupportedAdvertisers advertiser)
         {
             if (adHandler == null)

@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23c8fa3a97ab3e645ad05124206947f1, type: 3}
+  m_Name: CustomWaterfall
+  m_EditorClassIdentifier: 
+  Advertisers:
+  - advertiser: 0
+    ID: This is test to check values
+    IsAndroid: 1
+    IsIOS: 0
+    Ads:
+    - adType: 0
+      adIds:
+      - 
+      loadAtStart: 0
+      loadAfterClose: 0
+    - adType: 1
+      adIds:
+      - 
+      loadAtStart: 0
+      loadAfterClose: 0
+    - adType: 2
+      adIds:
+      - 
+      loadAtStart: 0
+      loadAfterClose: 0
+    - adType: 3
+      adIds:
+      - 
+      loadAtStart: 0
+      loadAfterClose: 0
+    - adType: 5
+      adIds:
+      - 
+      loadAtStart: 0
+      loadAfterClose: 0
+    - adType: 4
+      adIds:
+      - 
+      loadAtStart: 0
+      loadAfterClose: 0
+    order: 0
+  m_AdRules:
+  - m_Advertiser: 0
+    m_AdType: 0
+  - m_Advertiser: 0
+    m_AdType: 1
+  - m_Advertiser: 0
+    m_AdType: 2
+  - m_Advertiser: 0
+    m_AdType: 3
+  - m_Advertiser: 0
+    m_AdType: 4
+  - m_Advertiser: 0
+    m_AdType: 5

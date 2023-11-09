@@ -43,11 +43,7 @@ namespace SH.Ads
             {
                 if (onFocus)
                 {
-                    foreach (var t in AdSettings.Advertisers)
-                    {
-                        if (t.ShowAd(AdType.OpenAd))
-                            return;
-                    }
+                    AdSettings.AdCalling(AdType.OpenAd);
                 }
 
 
@@ -75,7 +71,7 @@ namespace SH.Ads
             AdSettings.GDPRConcent = NPAConcent;
             AdSettings.CCPAConsent = CCPAConent;
             Debug.Log("Bg thread instance created with object name" + BGRunnerInstance.name);
-            BGRunnerInstance.StartCoroutine(DelayInitializeAdvertisers());
+            BGRunnerInstance.StartCoroutine(AdSettings.IntializeAdsHandler());
         }
         /// <summary>
         /// Intialize All Advertisers
@@ -88,7 +84,7 @@ namespace SH.Ads
             AdSettings.GDPRConcent = NPAConcent;
             AdSettings.CCPAConsent = CCPAConent;
             Debug.Log("Bg thread instance created with object name" + BGRunnerInstance.name);
-            BGRunnerInstance.StartCoroutine(DelayInitializeAdvertisers(OnComplete));
+            BGRunnerInstance.StartCoroutine(AdSettings.IntializeAdsHandler(OnComplete));
         }
         /// <summary>
         /// Update user concent
@@ -100,29 +96,12 @@ namespace SH.Ads
             AdSettings.GDPRConcent = NPAConcent;
             AdSettings.CCPAConsent = CCPAConent;
         }
-
-        static IEnumerator DelayInitializeAdvertisers(Action OnComplete=null)
-        {
-            yield return null;
-
-            foreach (var t in AdSettings.Advertisers)
-            {
-                Debug.Log("Ads Status : Initializing " + t.advertiser);
-                yield return t.Initialize();
-                Debug.Log("Ads Status : Initilized " + t.advertiser);
-            }
-            OnComplete?.Invoke();
-        }
         /// <summary>
         /// Will show banner at top of screen
         /// </summary>
         public static void ShowBanner()
         {
-            foreach (var t in AdSettings.Advertisers)
-            {
-                if (t.ShowAd(AdType.Banner))
-                    return;
-            }
+            AdSettings.AdCalling(AdType.Banner);
         }
         /// <summary>
         /// Will Show any Big banner if available at bottom right
@@ -130,22 +109,14 @@ namespace SH.Ads
         /// </summary>
         public static void ShowBigBanner()
         {
-            foreach (var t in AdSettings.Advertisers)
-            {
-                if (t.ShowAd(AdType.BigBanner))
-                    return;
-            }
+            AdSettings.AdCalling(AdType.BigBanner);
         }
         /// <summary>
         /// Will Show any interstial if available
         /// </summary>
         public static void ShowInterstitial()
         {
-            foreach (var t in AdSettings.Advertisers)
-            {
-                if (t.ShowAd(AdType.Interstial))
-                    return;
-            }
+            AdSettings.AdCalling(AdType.Interstial);
         }
         /// <summary>
         /// Show Rewarded video ad
@@ -154,12 +125,7 @@ namespace SH.Ads
         public static void ShowRewarded(Action<string, float> OnAdReward)
         {
             OnUserEarnedReward = OnAdReward;
-            foreach (var t in AdSettings.Advertisers)
-            {
-                if (t.ShowAd(AdType.Rewarded))
-                    return;
-            }
-            Base.BaseAdHandler.AdNotAvailble();
+            AdSettings.AdCalling(AdType.Rewarded);
         }
         /// <summary>
         /// Show Rewarded Interstial Ad
@@ -168,12 +134,7 @@ namespace SH.Ads
         public static void ShowRewardedInterstitial(Action<string, float> OnAdReward)
         {
             OnUserEarnedReward = OnAdReward;
-            foreach (var t in AdSettings.Advertisers)
-            {
-                if (t.ShowAd(AdType.RewardedInterstial))
-                    return;
-            }
-            Base.BaseAdHandler.AdNotAvailble();
+            AdSettings.AdCalling(AdType.RewardedInterstial);
         }
         /// <summary>
         /// Will try to show Reward or Rewarded Interstial
@@ -182,18 +143,9 @@ namespace SH.Ads
         public static void ShowAnyRewarded(Action<string, float> OnAdReward)
         {
             OnUserEarnedReward = OnAdReward;
-            foreach (var t in AdSettings.Advertisers)
-            {
-                if (t.ShowAd(AdType.Rewarded))
-                    return;
-            }
-            foreach (var t in AdSettings.Advertisers)
-            {
-                if (t.ShowAd(AdType.RewardedInterstial))
-                    return;
-            }
+            AdSettings.AdCalling(AdType.Rewarded);
 
-            Base.BaseAdHandler.AdNotAvailble();
+            Debug.LogError("ToDO");
         }
     }
 }

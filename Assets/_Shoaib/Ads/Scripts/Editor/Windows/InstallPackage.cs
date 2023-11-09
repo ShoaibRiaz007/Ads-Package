@@ -11,51 +11,47 @@ using UnityEngine;
 
 namespace SH.Ads.Editor
 {
-    public class PackageInstallerWindow : Window
+    public class InstallPackage : IWindow
     {
         const string DependenceisPath = "Assets/_Shoaib/Ads/Dependencies";
         const string UnityAd = "com.unity.ads";
-        static   bool ImportingInProgress=false,InstallingUnityPackage=false;
+        static bool ImportingInProgress = false, InstallingUnityPackage = false;
         static List<string> files = new List<string>();
         static ListRequest InstalledPackages;
-        static AddRequest InstallPackage;
-        
-        [MenuItem("SH/Package Manager")]
-        public static void ShowWindow()
-        {
-            GetWindow<PackageInstallerWindow>("Install Manager");
-        }
-        private void OnFocus()
+        AddRequest installingPackage;
+        static Vector2 scrollPos;
+        public override string Name => "Package Installer";
+        public override void OnEnable(AdSettings settings)
         {
             Extensions.CheckForInstalledPackages();
             ListFilesInFolder(DependenceisPath);
             ImportingInProgress = false;
         }
-        static void ListFilesInFolder(string path)
+
+        public override void OnGUI()
         {
-            if (Directory.Exists(path))
-            {
-                files = new List<string>();
-                files.AddRange(Directory.GetFiles(path));
-                files=files.Where(a=>!a.Contains(".meta")).ToList();
-            }
-            else
-                EditorUtility.DisplayDialog("Error", $"Dictionary  [{DependenceisPath}] not found. Please create folder and place dependent packages in it.", "OK");
-            
-        }
-        Vector2 scrollPos;
-        protected override void OnGUI()
-        {
-            base.OnGUI();
             Header();
-            scrollPos=EditorGUILayout.BeginScrollView(scrollPos, new GUIStyle(EditorStyles.helpBox));
-            if(!ImportingInProgress)
+            scrollPos = EditorGUILayout.BeginScrollView(scrollPos, new GUIStyle(EditorStyles.helpBox));
+            if (!ImportingInProgress)
                 foreach (var t in Enum.GetValues(typeof(SupportedAdvertisers)).Cast<SupportedAdvertisers>())
                     ShowAdvertiser(t);
             else
                 EditorGUILayout.HelpBox("Importing package is in progress. Please wait for it complete.", MessageType.Warning);
 
             EditorGUILayout.EndScrollView();
+        }
+
+        static void ListFilesInFolder(string path)
+        {
+            if (Directory.Exists(path))
+            {
+                files = new List<string>();
+                files.AddRange(Directory.GetFiles(path));
+                files = files.Where(a => !a.Contains(".meta")).ToList();
+            }
+            else
+                EditorUtility.DisplayDialog("Error", $"Dictionary  [{DependenceisPath}] not found. Please create folder and place dependent packages in it.", "OK");
+
         }
 
         void Header()
@@ -65,14 +61,14 @@ namespace SH.Ads.Editor
         }
         void ShowAdvertiser(SupportedAdvertisers advertiser)
         {
-           
-            EditorGUILayout.LabelField(advertiser.ToString(),EditorStyles.boldLabel);
+
+            EditorGUILayout.LabelField(advertiser.ToString(), EditorStyles.boldLabel);
             switch (advertiser)
             {
                 case SupportedAdvertisers.Admob:
                     foreach (var path in files)
                         if (path.Contains("GoogleMobileAds"))
-                            ShowOption(path.Split('\\')[1], path,advertiser.IsInstalled());
+                            ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.AdColony:
                     foreach (var path in files)
@@ -95,20 +91,20 @@ namespace SH.Ads.Editor
                     return;
             }
         }
-        void ShowOption(string name, string path,bool isInstalled)
+        void ShowOption(string name, string path, bool isInstalled)
         {
             EditorGUILayout.BeginHorizontal(new GUIStyle(EditorStyles.helpBox));
             EditorGUILayout.LabelField(name);
 
-            if (GUILayout.Button(isInstalled? new GUIContent("Re Install", $"Reinstall {name}") : new GUIContent("Install", $"Install {name}"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
+            if (GUILayout.Button(isInstalled ? new GUIContent("Re Install", $"Reinstall {name}") : new GUIContent("Install", $"Install {name}"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
             {
                 AssetDatabase.importPackageCompleted += ImportPackageCompleted;
                 AssetDatabase.importPackageCancelled += ImportPackageCanceled;
                 AssetDatabase.importPackageStarted += ImportPackageStarted;
                 AssetDatabase.importPackageFailed += ImportPackageFailed;
-                AssetDatabase.ImportPackage(path,true);
+                AssetDatabase.ImportPackage(path, true);
             }
-            
+
             EditorGUILayout.EndHorizontal();
         }
 
@@ -123,19 +119,19 @@ namespace SH.Ads.Editor
             EditorGUILayout.BeginHorizontal(new GUIStyle(EditorStyles.helpBox));
             EditorGUILayout.LabelField("com.unity.ads");
 
-            if (GUILayout.Button(isInstalled ? new GUIContent("Re Install", $"Reinstall {name}") : new GUIContent("Install", $"Install {name}"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
+            if (GUILayout.Button(isInstalled ? new GUIContent("Re Install", $"Reinstall ") : new GUIContent("Install", $"Install "), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
             {
-                InstallPackage = Client.Add(UnityAd);
+                installingPackage = Client.Add(UnityAd);
                 InstallingUnityPackage = true;
             }
             EditorGUILayout.EndHorizontal();
         }
         void InstalledUnityPackage(string name)
         {
-            if(InstalledPackages==null)
+            if (InstalledPackages == null)
                 InstalledPackages = Client.List();
 
-            if(!InstalledPackages.IsCompleted)
+            if (!InstalledPackages.IsCompleted)
             {
                 EditorGUILayout.HelpBox($"Checking for Updates of [{UnityAd}]", MessageType.Warning);
                 return;
@@ -154,19 +150,19 @@ namespace SH.Ads.Editor
 
         private void AddingUnityPackage()
         {
-            if (InstallPackage == null)
+            if (installingPackage == null)
                 return;
 
-            if (!InstallPackage.IsCompleted)
+            if (!installingPackage.IsCompleted)
             {
                 EditorGUILayout.HelpBox($"Installing unity [{UnityAd}] package.", MessageType.Warning);
                 return;
             }
 
-            if(InstallPackage.Status == StatusCode.Success)
+            if (installingPackage.Status == StatusCode.Success)
             {
                 EditorUtility.DisplayDialog("Package successfully installed", $"Package  [{UnityAd}] imported successfully", "OK");
-                InstallPackage=null;
+                installingPackage = null;
                 InstallingUnityPackage = false;
                 Extensions.CheckForInstalledPackages();
             }
@@ -202,7 +198,7 @@ namespace SH.Ads.Editor
             AssetDatabase.importPackageCancelled -= ImportPackageCanceled;
             AssetDatabase.importPackageStarted -= ImportPackageStarted;
             AssetDatabase.importPackageFailed -= ImportPackageFailed;
-            
+
         }
     }
 }
