@@ -5,7 +5,6 @@ using SH.Ads.Editor.Base;
 using System.IO;
 using SH.Ads.Editor;
 using SH.Ads.Piplines;
-using System;
 
 namespace SH.Ads
 {
@@ -68,7 +67,7 @@ namespace SH.Ads
 
         void AddContentItem(IWindow window,int index)
         {
-            if (GUILayout.Button(new GUIContent(window.Name, "Add new advertiser in the project"), new GUIStyle(EditorStyles.toolbarButton) { margin = new RectOffset(5, 5, 5, 5), fixedHeight = 30, alignment = TextAnchor.MiddleLeft }))
+            if (GUILayout.Button(new GUIContent(window.Name, window.ToolTip), new GUIStyle(EditorStyles.toolbarButton) { margin = new RectOffset(5, 5, 5, 5), fixedHeight = 30, alignment = TextAnchor.MiddleLeft }))
             {
                 currentWindow = window;
                 currentWindow.OnEnable(AdSetting);

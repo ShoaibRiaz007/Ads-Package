@@ -1,7 +1,7 @@
+#if UNITY_EDITOR
 using SH.Ads.Base;
 using SH.Ads.Editor.Base;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
@@ -12,6 +12,7 @@ namespace SH.Ads.Editor
     {
         public override string Name => "Add Advertiser";
 
+        public override string ToolTip => "Panel to add new advertiser to active list";
 
         static AdSettings AdSetting;
         static SupportedAdvertisers selectedAdvertiser = SupportedAdvertisers.Admob;
@@ -25,6 +26,17 @@ namespace SH.Ads.Editor
         }
 
         public override void OnGUI()
+        {
+            Header();
+            Content();
+        }
+        void Header()
+        {
+            EditorGUILayout.HelpBox("This window is used to used to add Advertisers in the project. ", MessageType.Info);
+            EditorGUILayout.Space();
+        }
+
+        void Content()
         {
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.HelpBox("You can add multiple advertisers. When you add an advertiser, it may take some time as it requires recompilation of the code. You can edit advertiser IDs even after they have been added.", MessageType.Info);
@@ -43,7 +55,6 @@ namespace SH.Ads.Editor
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space();
         }
-
         private void OnAddAdvertiserClick()
         {
             if (!AdSetting.CurrentPipline.Advertisers.Any(advertiser => advertiser.advertiser == selectedAdvertiser))
@@ -87,3 +98,4 @@ namespace SH.Ads.Editor
         }
     }
 }
+#endif

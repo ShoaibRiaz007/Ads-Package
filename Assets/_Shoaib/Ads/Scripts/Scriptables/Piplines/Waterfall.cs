@@ -1,11 +1,7 @@
 using SH.Ads.Base;
-using System;
-using System.Collections;
-using UnityEngine;
 
 namespace SH.Ads.Piplines
 {
-    [CreateAssetMenu(fileName = nameof(Waterfall), menuName = "SH/Pipline/Create New/Waterfall", order = 1)]
     public class Waterfall : IPipeline
     {
         public override string Name => "Waterfall Pipline";
@@ -16,15 +12,6 @@ namespace SH.Ads.Piplines
             "\n\nThis Waterfall Pipeline allows efficient utilization of multiple ad platforms, " +
             "ensuring ads are served from the first available advertiser for each ad type.";
 
-        public override IEnumerator Intialize()
-        {
-            foreach(var t in Advertisers)
-            {
-                UnityEngine.Debug.Log("Ad status : Intializing advertiser : "+ t.advertiser);
-                yield return t.Initialize();
-                UnityEngine.Debug.Log($"Ad status : Advertiser '{t.advertiser}' Intialized");
-            }
-        }
         public override void ShowAd(AdType adType)
         {
             foreach (var t in Advertisers)
@@ -35,11 +22,6 @@ namespace SH.Ads.Piplines
 
             if (adType == AdType.Rewarded || adType == AdType.RewardedInterstial)
                 BaseAdHandler.AdNotAvailble();
-        }
-
-        public static implicit operator Waterfall(CustomWaterfall v)
-        {
-            throw new NotImplementedException();
         }
     }
 }

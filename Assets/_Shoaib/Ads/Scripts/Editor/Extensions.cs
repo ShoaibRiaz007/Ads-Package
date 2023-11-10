@@ -130,6 +130,8 @@ namespace SH
                     propertyInfo.SetValue(settings, true, null);
                 }
 
+                EditorUtility.SetDirty(settings);
+
             }
         }
 

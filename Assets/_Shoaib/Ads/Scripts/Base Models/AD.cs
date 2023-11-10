@@ -12,7 +12,7 @@ namespace SH.Ads.Base
         [SerializeField] public bool loadAtStart=false,loadAfterClose=false;
         private BaseAdHandler adHandler;
 #if UNITY_EDITOR
-        [NonSerialized] public bool Folded = false;
+        [NonSerialized]public bool Folded = false;
 #endif
         public void Intialize(SupportedAdvertisers advertiser)
         {
@@ -51,6 +51,19 @@ namespace SH.Ads.Base
             if (type != adType)
                 return;
             adHandler.Show();
+        }
+
+        internal void RemoveAd(AdType type)
+        {
+            if (adHandler == null)
+            {
+                Debug.LogError("AdHandler is not initialized.");
+                return;
+            }
+            if (type != adType)
+                return;
+
+            adHandler.Remove();
         }
 
         public bool IsAvailable => adHandler.IsAdAvailable;

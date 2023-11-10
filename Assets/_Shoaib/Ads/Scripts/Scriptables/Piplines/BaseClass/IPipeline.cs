@@ -15,10 +15,28 @@ namespace SH.Ads.Base
 #if UNITY_EDITOR
         [NonSerialized] public bool Folded = false;
 #endif
-        public virtual IEnumerator Intialize() { yield break; }
-        public virtual void ShowAd(AdType adType) { }
+        public IEnumerator Intialize()
+        {
+            foreach (var t in Advertisers)
+            {
+                Debug.Log("Ad status : Intializing advertiser : " + t.advertiser);
+                yield return t.Initialize();
+                Debug.Log($"Ad status : Advertiser '{t.advertiser}' Intialized");
+            }
+        }
+        public virtual void ShowAd(AdType adType)
+        {
+            foreach (var t in Advertisers)
+            {
+                if (t.ShowAd(adType))
+                    return;
+            }
 
-        public void CopyValues(IPipeline copyfrom )
+            if (adType == AdType.Rewarded || adType == AdType.RewardedInterstial)
+                BaseAdHandler.AdNotAvailble();
+        }
+
+        public void CopyValues(IPipeline copyfrom)
         {
             Advertisers= copyfrom.Advertisers;
         }

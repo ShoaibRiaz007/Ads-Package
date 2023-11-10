@@ -17,7 +17,7 @@ namespace SH.Ads.Base
         [SerializeField] public int order;
 
 #if UNITY_EDITOR
-        [NonSerialized]public bool Folded = false;
+        public bool Folded { get => UnityEditor.EditorPrefs.GetBool($"Floded_{advertiser}"); set=>UnityEditor.EditorPrefs.SetBool($"Floded_{advertiser}",value);}
 #endif
 
 
@@ -48,6 +48,12 @@ namespace SH.Ads.Base
                  tem.ShowAd(type);
 
             return IsAdAvailable(type);
+        }
+
+        public void HideAd(AdType type)
+        {
+            foreach (var tem in Ads)
+                tem.RemoveAd(type);
         }
         bool IsAdAvailable(AdType type)
         {

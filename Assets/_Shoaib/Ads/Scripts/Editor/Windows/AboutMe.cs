@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using SH.Ads.Editor.Base;
 using UnityEditor;
 using UnityEngine;
@@ -13,7 +14,9 @@ namespace SH.Ads.Editor
             "\n\n My passion for staying up-to-date with industry trends and my dedication" +
             "\n to delivering high-quality work have contributed to the success of various projects. ";
         public override string Name => "About Me";
-        static Texture2D infoImage;
+
+        public override string ToolTip => "About the developer";
+
         public override void OnEnable(AdSettings settings)
         {
 
@@ -21,8 +24,7 @@ namespace SH.Ads.Editor
 
         public override void OnGUI()
         {
-            if (infoImage == null)
-                infoImage = EditorGUIUtility.FindTexture("console.infoicon");
+            Header();
 
             EditorGUILayout.BeginVertical();
 
@@ -56,5 +58,13 @@ namespace SH.Ads.Editor
             EditorGUILayout.LabelField(Summary, new GUIStyle(EditorStyles.textArea) { margin = new RectOffset(5, 5, 5, 5), alignment = TextAnchor.MiddleLeft });
 EditorGUILayout.EndVertical();
         }
+
+        void Header()
+        {
+            EditorGUILayout.HelpBox("This window is used to show all about the developer. Thats me :D", MessageType.Info);
+            EditorGUILayout.Space();
+        }
+
     }
 }
+#endif

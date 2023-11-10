@@ -21,6 +21,9 @@ namespace SH.Ads.Editor
         AddRequest installingPackage;
         static Vector2 scrollPos;
         public override string Name => "Package Installer";
+
+        public override string ToolTip => "Panel to intall new advertiser";
+
         public override void OnEnable(AdSettings settings)
         {
             Extensions.CheckForInstalledPackages();

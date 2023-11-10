@@ -28,16 +28,14 @@ namespace SH.Ads.Editor.Base
 
 
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            Header(ref pipeline);
+            Header();
             Content(ref pipeline);
             Footer();
             EditorGUILayout.EndScrollView();
         }
 
-        void Header(ref IPipeline pipeline)
+        void Header()
         {
-            
-            EditorGUILayout.LabelField(pipeline.Name, EditorStyles.boldLabel);
             EditorGUILayout.Space(5);
             EditorGUILayout.LabelField("Active Advertisers -:", EditorStyles.boldLabel);
             

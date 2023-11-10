@@ -1,4 +1,4 @@
-using SH.Ads.Base;
+#if UNITY_EDITOR
 using SH.Ads.Editor.Base;
 using SH.Ads.Piplines;
 using UnityEditor;
@@ -13,6 +13,8 @@ namespace SH.Ads.Editor
         static AdSettings adSettings;
         public override string Name => "Select Pipeline";
 
+        public override string ToolTip => "Panel to select Pipline Active Pipline";
+
         public override void OnEnable(AdSettings settings)
         {
             adSettings= settings;
@@ -24,12 +26,17 @@ namespace SH.Ads.Editor
 
         public override void OnGUI()
         {
+            Header();
             EditorGUILayout.BeginHorizontal();
             Left();
             Right();
             EditorGUILayout.EndHorizontal();
         }
-
+        void Header()
+        {
+            EditorGUILayout.HelpBox("This window is used to used to select active pipeline. Bellow is the details about every supported pipeline currently.", MessageType.Info);
+            EditorGUILayout.Space();
+        }
         void Left()
         {
             EditorGUILayout.BeginVertical(new GUIStyle(EditorStyles.helpBox) { stretchHeight = true });
@@ -81,3 +88,4 @@ namespace SH.Ads.Editor
         }
     }
 }
+#endif
