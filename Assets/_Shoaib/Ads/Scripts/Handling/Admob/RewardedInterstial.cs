@@ -2,6 +2,7 @@
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
+using System;
 using UnityEngine;
 
 namespace SH.Ads.Admob
@@ -14,14 +15,16 @@ namespace SH.Ads.Admob
         RewardedInterstitialAd interStialReward;
   
         protected internal override bool IsAdAvailable => IsIntialized  && interStialReward != null && interStialReward.CanShowAd();
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
+            adReshowTime = ad.ADReshowTime;
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
 
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()
@@ -40,22 +43,28 @@ namespace SH.Ads.Admob
         {
             if (interStialReward != null)
                 interStialReward.Destroy();
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
             if (interStialReward != null)
                 interStialReward.Destroy();
+            IsAdShowing = false;
         }
         internal override void Show()
         {
             if ( IDs.Count == 0)
                 return;
-
+            if (!CanAdBeShown)
+                return;
+            
             if (IsAdAvailable)
             {
                 AdsManager.BGRunnerInstance.StartCoroutine(ShowRewardedPlaceholder(() =>
                 {
+                    IsAdShowing = true;
                     LocalAdShown = true;
+                    LastAdShownTime = DateTime.Now;
                     interStialReward.Show(HandleUserEarnedReward);
                 }));
             }
@@ -77,7 +86,8 @@ namespace SH.Ads.Admob
                 interStialReward.OnAdFullScreenContentClosed += ()=> 
                 {
                     adLoading = false;
-                    if(loadAfterClose)
+                    IsAdShowing = false;
+                    if (loadAfterClose)
                         Load();
                 };
                 interStialReward.OnAdImpressionRecorded += () =>
@@ -100,7 +110,7 @@ namespace SH.Ads.Admob
                     Load();
                     return;
                 }
-                
+                IsAdShowing = false;
                 count = 0;
             }
         }

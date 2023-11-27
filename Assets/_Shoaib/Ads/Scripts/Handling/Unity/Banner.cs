@@ -7,14 +7,15 @@ namespace SH.Ads.Unity
 {
     public class Banner : BaseAdHandler
     {
-        protected internal override bool IsAdAvailable => IsIntialized ;
+        protected internal override bool IsAdAvailable => IsIntialized && Advertisement.Banner.isLoaded ;
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()
@@ -26,7 +27,7 @@ namespace SH.Ads.Unity
             {
                 Remove();
                 Advertisement.Banner.SetPosition(UnityEngine.Advertisements.BannerPosition.TOP_CENTER);
-                Advertisement.Banner.Show(IDs[count], new BannerOptions() { showCallback = () => adLoading = false});
+                Advertisement.Banner.Show(IDs[count], new BannerOptions() { showCallback = () => { adLoading = false; IsAdShowing = true; } });
                 adLoading = true;
             }
         }
@@ -34,12 +35,14 @@ namespace SH.Ads.Unity
         {
             if (IsAdAvailable)
                 Advertisement.Banner.Hide(false);
+            IsAdShowing = false;
 
         }
         internal override void Remove()
         {
             if (IsAdAvailable)
                 Advertisement.Banner.Hide(true);
+            IsAdShowing = false;
         }
         internal override void Show()
         {
@@ -50,6 +53,7 @@ namespace SH.Ads.Unity
             {
                 Advertisement.Banner.SetPosition(UnityEngine.Advertisements.BannerPosition.TOP_CENTER);
                 Advertisement.Banner.Show(IDs[count]);
+                IsAdShowing = true;
             }
             else
                 Load();

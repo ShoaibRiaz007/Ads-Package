@@ -86,7 +86,7 @@ namespace SH
 
             
         }
-        public static void UpdateAdmobSettings(this Advertiser advertiser)
+        public static void UpdateAdmobSettings(this Ads.Base.Advertiser advertiser)
         {
             var settingType = Assembly.Load("GoogleMobileAds.Editor")?.GetType("GoogleMobileAds.Editor.GoogleMobileAdsSettings");
             if (settingType != null)

@@ -13,7 +13,7 @@ namespace SH.Ads.IronSource
     /// </summary>
     internal class Manager : BaseManager
     {
-        internal override IEnumerator Initialize(Advertiser advertiser, bool isForChildren, string ageGroup)
+        internal override IEnumerator Initialize(Base.Advertiser advertiser, bool isForChildren, string ageGroup)
         {
              yield return IsNetworkAvailable();
 
@@ -31,7 +31,7 @@ namespace SH.Ads.IronSource
             List<string> suportedAds = new List<string>();
             foreach (var t in advertiser.Ads)
             {
-                switch (t.adType) 
+                switch (t.type) 
                 {
                     case AdType.Banner:
                         suportedAds.Add(IronSourceAdUnits.BANNER);

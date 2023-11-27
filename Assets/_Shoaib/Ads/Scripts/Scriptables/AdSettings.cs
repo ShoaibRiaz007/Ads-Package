@@ -3,8 +3,6 @@ using SH.Ads.Piplines;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
 using UnityEngine;
 
 namespace SH.Ads
@@ -54,17 +52,13 @@ namespace SH.Ads
         private void OnValidate()
         {
             if (_instance == null)
-            {
-                _instance = Resources.Load<AdSettings>("AdSetting");
-            }
+                _instance = Resources.Load<AdSettings>(nameof(AdSettings));
         }
 
         private void OnEnable()
         {
             if (_instance == null)
-            {
-                _instance = Resources.Load<AdSettings>("AdSetting");
-            }
+                _instance = Resources.Load<AdSettings>(nameof(AdSettings));
         }
 
         [field: NonSerialized] public static bool RemoveAd { get => PlayerPrefs.GetInt("AdsRemove", 0) == 1; set => PlayerPrefs.GetInt("AdsRemove", value ? 1 : 0); }
@@ -80,27 +74,5 @@ namespace SH.Ads
         [field: NonSerialized] public static float RewardAmount = _instance? _instance.m_RewardAmountForRewardedAds:500;
 
         [field: NonSerialized] public static GameObject RewardedAdsPrefab => _instance?.m_RewardedAdsPrefab;
-
-
-
-#if UNITY_EDITOR
-        const string JSON_SAVE_PATH = "Assets/_Shoaib/Ads/Json/config.json";
-        public static new void SetDirty()
-        {
-            UnityEditor.EditorUtility.SetDirty(Instance);
-        }
-
-        internal static void AfterDeserialize()
-        {
-            Instance.CurrentPipline=JsonUtility.FromJson<CustomWaterfall>(File.ReadAllText(JSON_SAVE_PATH));
-        }
-
-        internal static void BeforeSerialize()
-        {
-            string json = JsonUtility.ToJson(Instance.CurrentPipline as CustomWaterfall, true);
-            File.WriteAllText(JSON_SAVE_PATH, json);
-            AssetDatabase.Refresh();
-        }
-#endif
     }
 }

@@ -16,6 +16,7 @@ namespace SH.Ads.AdColony
         AdView adView;
         AdType adType; 
         protected internal override bool IsAdAvailable => IsIntialized  && adView != null;
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
            IDs = ad.adIds;
@@ -55,12 +56,13 @@ namespace SH.Ads.AdColony
         {
             if (IsAdAvailable)
                 adView.HideAdView();
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
             if (IsAdAvailable)
                 adView.DestroyAdView();
-
+            IsAdShowing = false;
             ColonyAd.OnAdViewLoaded -= OnAdLoad;
             ColonyAd.OnAdViewFailedToLoad -= OnAdFailedToLoad;
         }
@@ -70,7 +72,10 @@ namespace SH.Ads.AdColony
                 return;
 
             if (IsAdAvailable)
+            {
                 adView.ShowAdView();
+                IsAdShowing = true;
+            }
             else
                 Load();
 
@@ -94,6 +99,7 @@ namespace SH.Ads.AdColony
                 return;
             }
             count = 0;
+            IsAdShowing = false;
             return;
         }
 

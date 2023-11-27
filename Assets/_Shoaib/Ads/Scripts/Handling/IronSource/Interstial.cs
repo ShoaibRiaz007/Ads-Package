@@ -9,20 +9,22 @@ namespace SH.Ads.IronSource
     public class Interstial : BaseAdHandler
     {
         protected internal override bool IsAdAvailable => IsIntialized && IronsourceAgent.Agent.isInterstitialReady();
+        protected internal override bool IsAdShowing { get; protected set; }
         AdType adType;
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
-            adType = ad.adType;
+            adType = ad.type;
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
+            loadAfterClose = ad.LoadAfterClose;
 
 
             IronSourceInterstitialEvents.onAdClosedEvent += (ad) =>
             {
                 Debug.Log($"Ad log : {this} ad is closed : {count}");
                 adLoading = false;
+                IsAdShowing = false;
                 if (loadAfterClose)
                     Load();
             };
@@ -37,11 +39,13 @@ namespace SH.Ads.IronSource
             {
                 Debug.Log($"Ad log : {this} ad show to user successfully : {count}");
                 adLoading = false;
+                IsAdShowing = false;
             };
             IronSourceInterstitialEvents.onAdOpenedEvent += (ad) =>
             {
                 Debug.Log($"Ad log : {this} ad is opened : {count}");
                 adLoading = false;
+                IsAdShowing = true;
             };
 
             IronSourceInterstitialEvents.onAdLoadFailedEvent += (ad) =>
@@ -55,10 +59,11 @@ namespace SH.Ads.IronSource
                     return;
                 }
                 count = 0;
+                IsAdShowing = false;
             };
 
 
-            if (ad.loadAtStart)
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()
@@ -77,9 +82,11 @@ namespace SH.Ads.IronSource
 
         internal override void Hide()
         {
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
+            IsAdShowing = false;
         }
         internal override void Show()
         {
@@ -89,6 +96,7 @@ namespace SH.Ads.IronSource
             {
                 IronsourceAgent.Agent.showInterstitial();
                 LocalAdShown = true;
+                IsAdShowing = true;
             }
             else
             {

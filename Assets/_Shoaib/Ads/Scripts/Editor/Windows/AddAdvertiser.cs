@@ -62,7 +62,7 @@ namespace SH.Ads.Editor
                 if (selectedAdvertiser.IsInstalled())
                 {
 
-                    Advertiser newAdvertiser = new Advertiser
+                    Ads.Base.Advertiser newAdvertiser = new Ads.Base.Advertiser
                     {
                         advertiser = selectedAdvertiser,
                         ID = newAdvertiserID,

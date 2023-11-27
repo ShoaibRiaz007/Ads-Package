@@ -10,6 +10,7 @@ namespace SH.Ads.Facebook
     {
         RewardedVideoAd adInstance;
         protected internal override bool IsAdAvailable => IsIntialized && adInstance != null && adInstance.IsValid();
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
             IDs = ad.adIds;
@@ -48,6 +49,7 @@ namespace SH.Ads.Facebook
                 adInstance.RewardedVideoAdDidClose += () =>
                 {
                     Debug.Log($"Ad log : {this} close impression of ad id : {count}");
+                    IsAdShowing = false;
                     if (loadAfterClose)
                         Load();
                 };
@@ -66,6 +68,7 @@ namespace SH.Ads.Facebook
                  */
                 adInstance.rewardedVideoAdActivityDestroyed = () =>
                 {
+                    IsAdShowing = false;
                     Remove();
                 };
 #endif
@@ -77,11 +80,13 @@ namespace SH.Ads.Facebook
         {
             if (adInstance != null)
                 adInstance.Dispose();
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
             if (adInstance != null)
                 adInstance.Dispose();
+            IsAdShowing = false;
         }
         internal override void Show()
         {
@@ -91,6 +96,7 @@ namespace SH.Ads.Facebook
             {
                 AdsManager.BGRunnerInstance.StartCoroutine(ShowRewardedPlaceholder(() =>
                 {
+                    IsAdShowing = true;
                     LocalAdShown = true;
                     adInstance.Show();
                 }));

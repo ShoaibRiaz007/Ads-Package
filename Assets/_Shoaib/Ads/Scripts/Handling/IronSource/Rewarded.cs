@@ -9,19 +9,20 @@ namespace SH.Ads.IronSource
     public class Rewarded : BaseAdHandler
     {
         protected internal override bool IsAdAvailable => IsIntialized && IronsourceAgent.Agent.isRewardedVideoAvailable();
-        AdType adType;
+        protected internal override bool IsAdShowing { get; protected set; }
+
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
-            adType = ad.adType;
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
+            loadAfterClose = ad.LoadAfterClose;
 
 
             IronSourceRewardedVideoEvents.onAdClosedEvent += (ad) =>
             {
                 Debug.Log($"Ad log : {this} ad is closed : {count}");
+                IsAdShowing = false;
                 if (loadAfterClose)
                     Load();
             };
@@ -41,6 +42,7 @@ namespace SH.Ads.IronSource
             IronSourceRewardedVideoEvents.onAdOpenedEvent += (ad) =>
             {
                 Debug.Log($"Ad log : {this} ad is opened : {count}");
+                IsAdShowing = true;
             };
 
             IronSourceRewardedVideoEvents.onAdLoadFailedEvent += (ad) =>
@@ -54,10 +56,11 @@ namespace SH.Ads.IronSource
                     return;
                 }
                 count = 0;
+                IsAdShowing = false;
             };
 
 
-            if (ad.loadAtStart)
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()
@@ -76,9 +79,11 @@ namespace SH.Ads.IronSource
 
         internal override void Hide()
         {
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
+            IsAdShowing = false;
         }
         internal override void Show()
         {
@@ -88,6 +93,7 @@ namespace SH.Ads.IronSource
             {
                 IronsourceAgent.Agent.showRewardedVideo(IDs[count]);
                 LocalAdShown = true;
+                IsAdShowing = true;
             }
             else
             {

@@ -23,7 +23,7 @@ namespace SH.Ads.Unity
             Debug.LogError(error + " \n " + message);
         }
 
-        internal override IEnumerator Initialize(Advertiser advertiser, bool isForChildren, string ageGroup)
+        internal override IEnumerator Initialize(Base.Advertiser advertiser, bool isForChildren, string ageGroup)
         {
             yield return IsNetworkAvailable();
             if (Advertisement.isSupported)

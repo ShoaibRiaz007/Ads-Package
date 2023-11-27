@@ -36,9 +36,18 @@ namespace SH.Ads.Base
                    yield return manager.Initialize(this, AdSettings.IsForChildren,AdSettings.AgeGroupRating);
                 }
                 else
-                    UnityEngine.Debug.LogError("No type found. Finding type {" + "SH.Ads." + advertiser + ".Manager}");
+                    Debug.LogError("No type found. Finding type {" + "SH.Ads." + advertiser + ".Manager}");
+            }
+            else
+            {
+                foreach (var t in Ads)// Intialize ID => for spiral pipline
+                    t.Intialize(advertiser);
             }
         }
+
+
+        public bool Intialized => manager != null;
+
         public bool ShowAd(AdType type)
         {
             if (AdSettings.RemoveAd)
@@ -50,7 +59,7 @@ namespace SH.Ads.Base
             return IsAdAvailable(type);
         }
 
-        public void HideAd(AdType type)
+        public void RemoveAd(AdType type)
         {
             foreach (var tem in Ads)
                 tem.RemoveAd(type);
@@ -59,7 +68,7 @@ namespace SH.Ads.Base
         {
             for(int i = 0; i < Ads.Count; i++)
             {
-                if (Ads[i].adType == type)
+                if (Ads[i].type == type)
                     return Ads[i].IsAvailable;
             }
 

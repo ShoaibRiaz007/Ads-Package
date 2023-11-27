@@ -9,15 +9,16 @@ namespace SH.Ads.IronSource
     public class Banner : BaseAdHandler
     {
         protected internal override bool IsAdAvailable => IsIntialized && adUnit!=null;
+        protected internal override bool IsAdShowing { get; protected set; }
         IronSourceAdInfo adUnit;
         AdType adType;
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
-            adType = ad.adType;
+            adType = ad.type;
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
+            loadAfterClose = ad.LoadAfterClose;
 
 
             IronSourceBannerEvents.onAdLoadedEvent += (ad) =>
@@ -38,6 +39,7 @@ namespace SH.Ads.IronSource
                     return;
                 }
                 count = 0;
+                IsAdShowing = false;
             };
 
             IronSourceBannerEvents.onAdClickedEvent += (ad) =>
@@ -45,7 +47,7 @@ namespace SH.Ads.IronSource
                 Debug.Log($"Ad log : {this} ad is clicked: {count}");
 
             };
-            if (ad.loadAtStart)
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()
@@ -79,11 +81,13 @@ namespace SH.Ads.IronSource
         {
             if(adUnit!=null)
                 IronsourceAgent.Agent.hideBanner();
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
             if (adUnit != null)
                 IronsourceAgent.Agent.destroyBanner();
+            IsAdShowing = false;
         }
         internal override void Show()
         {
@@ -91,6 +95,7 @@ namespace SH.Ads.IronSource
                 return;
             if (IsAdAvailable)
             {
+                IsAdShowing = true;
                 IronsourceAgent.Agent.displayBanner();
             }
             else

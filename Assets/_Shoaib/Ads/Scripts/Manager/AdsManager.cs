@@ -43,7 +43,7 @@ namespace SH.Ads
             {
                 if (onFocus)
                 {
-                    AdSettings.AdCalling(AdType.OpenAd);
+                   AdSettings.AdCalling(AdType.OpenAd);
                 }
 
 

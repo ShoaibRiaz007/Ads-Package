@@ -9,7 +9,7 @@ namespace SH.Ads.Facebook
     {
         AdView adInstance;
         protected internal override bool IsAdAvailable => IsIntialized && adInstance != null && adInstance.IsValid();
-
+        protected internal override bool IsAdShowing { get; protected set; }
         AdType adType;
         internal override void Intialize(AD ad)
         {
@@ -59,11 +59,13 @@ namespace SH.Ads.Facebook
         {
             if (adInstance != null)
                 adInstance.Dispose();
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
             if (adInstance != null)
                 adInstance.Dispose();
+            IsAdShowing = false;
         }
         internal override void Show()
         {
@@ -71,7 +73,8 @@ namespace SH.Ads.Facebook
                 return;
             if (IsAdAvailable)
             {
-                if(adType == AdType.Banner)
+                IsAdShowing = true;
+                if (adType == AdType.Banner)
                     adInstance.Show(AdPosition.TOP);
                 else
                     adInstance.Show(0,0);

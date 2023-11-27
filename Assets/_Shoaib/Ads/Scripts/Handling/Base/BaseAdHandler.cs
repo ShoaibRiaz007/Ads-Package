@@ -37,7 +37,18 @@ namespace SH.Ads.Base
                 return Canvas;
             }
         }
-        protected static bool TestMode => Ads.AdSettings.TestMode;
+
+        protected DateTime LastAdShownTime = DateTime.MinValue;
+        protected bool CanAdBeShown
+        {
+            get
+            {
+                Debug.Log("Ads status : Last Ad call Time : " + (DateTime.Now - LastAdShownTime).TotalSeconds);
+                return (DateTime.Now - LastAdShownTime).TotalSeconds > adReshowTime;
+            }
+        }
+
+        protected static bool TestMode => AdSettings.TestMode;
         /// <summary>
         /// IDs of the ad
         /// </summary>
@@ -46,6 +57,10 @@ namespace SH.Ads.Base
         /// Current Ad ID
         /// </summary>
         protected int count = 0;
+        /// <summary>
+        /// Time after which a ad can be shown again
+        /// </summary>
+        protected float adReshowTime = 0;
         /// <summary>
         /// Ad is intialized
         /// </summary>
@@ -67,9 +82,18 @@ namespace SH.Ads.Base
         /// </summary>
         abstract protected internal bool IsAdAvailable { get; }
         /// <summary>
+        /// Check if ad is showing
+        /// </summary>
+        abstract protected internal bool IsAdShowing { get; protected set; }
+        /// <summary>
         /// Intialize the ad
         /// </summary>
-        abstract internal void Intialize(AD ad);
+        virtual internal void Intialize(AD ad)
+        {
+            IDs = ad.ADIds;
+            loadAfterClose = ad.LoadAfterClose;
+            IsIntialized = true;
+        }
         /// <summary>
         /// Load ad from the server
         /// </summary>
@@ -137,7 +161,7 @@ namespace SH.Ads.Base
         {
             WaitForSecondsRealtime wait = new WaitForSecondsRealtime(1);
             if(VideoRewardPlaceHolder==null)
-            AddVideoPlaceHolder();
+                AddVideoPlaceHolder();
             yield return null;
 
             if (noAdAvailable)

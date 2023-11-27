@@ -9,6 +9,7 @@ namespace SH.Ads.Facebook
     {
         InterstitialAd adInstance;
         protected internal override bool IsAdAvailable => IsIntialized  && adInstance != null && adInstance.IsValid();
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
             IDs = ad.adIds;
@@ -42,13 +43,15 @@ namespace SH.Ads.Facebook
                         return;
                     }
                     count = 0;
+                    IsAdShowing = false;
                 };
                 adInstance.InterstitialAdWillLogImpression += ()=> { Debug.Log($"Ad log : {this} impression loged of ad id : {count}"); };
                 adInstance.InterstitialAdDidClick += () => { Debug.Log($"Ad log : {this} click impression of ad id : {count}"); };
                 adInstance.InterstitialAdDidClose += () => 
                 { 
-                    Debug.Log($"Ad log : {this} close impression of ad id : {count}"); 
-                    if(loadAfterClose)
+                    Debug.Log($"Ad log : {this} close impression of ad id : {count}");
+                    IsAdShowing = false;
+                    if (loadAfterClose)
                         Load();
                 };
 #if UNITY_ANDROID
@@ -61,6 +64,7 @@ namespace SH.Ads.Facebook
                  */
                 adInstance.interstitialAdActivityDestroyed =()=>
                 {
+                    IsAdShowing = false;
                     Remove();
                 };
 #endif
@@ -72,11 +76,13 @@ namespace SH.Ads.Facebook
         {
             if (adInstance != null)
                 adInstance.Dispose();
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
             if (adInstance != null)
                 adInstance.Dispose();
+            IsAdShowing = false;
         }
         internal override void Show()
         {
@@ -84,6 +90,7 @@ namespace SH.Ads.Facebook
                 return;
             if (IsAdAvailable)
             {
+                IsAdShowing = true;
                 LocalAdShown = true;
                 adInstance.Show();
             }

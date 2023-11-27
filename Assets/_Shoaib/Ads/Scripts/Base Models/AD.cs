@@ -7,9 +7,10 @@ namespace SH.Ads.Base
     [System.Serializable]
     public class AD
     {
-        [SerializeField] public AdType adType = AdType.Banner;
-        [SerializeField] public List<string> adIds = new List<string>();
-        [SerializeField] public bool loadAtStart=false,loadAfterClose=false;
+        [SerializeField] public AdType type = AdType.Banner;
+        [SerializeField] public List<string> ADIds = new List<string>();
+        [SerializeField] public bool LoadAtStart=false,LoadAfterClose=false;
+        [SerializeField] public float ADReshowTime=0;
         private BaseAdHandler adHandler;
 #if UNITY_EDITOR
         [NonSerialized]public bool Folded = false;
@@ -18,14 +19,14 @@ namespace SH.Ads.Base
         {
             if (adHandler == null)
             {
-                Type type = Type.GetType("SH.Ads." + advertiser + "." + adType.ToString().Replace("Big", string.Empty));
-                if (type != null)
+                Type adType = Type.GetType("SH.Ads." + advertiser + "." + type.ToString().Replace("Big", string.Empty));
+                if (adType != null)
                 {
-                    adHandler = Activator.CreateInstance(type) as BaseAdHandler;
+                    adHandler = Activator.CreateInstance(adType) as BaseAdHandler;
                     adHandler.Intialize(this);
                 }
                 else
-                    UnityEngine.Debug.LogError("No type found. Finding type {"+ "SH.Ads." + advertiser + "." + adType.ToString().Replace("Big", string.Empty)+"}");
+                    Debug.LogError("No type found. Finding type {"+ "SH.Ads." + advertiser + "." + type.ToString().Replace("Big", string.Empty)+"}");
                
             }
             else
@@ -40,15 +41,15 @@ namespace SH.Ads.Base
                 Debug.LogError("AdHandler is not initialized.");
                 return;
             }
-            if (type == AdType.Banner && adType == AdType.BigBanner)
+            if (type == AdType.Banner && this.type == AdType.BigBanner)
             {
                 adHandler.Hide();
             }
-            else if (type == AdType.BigBanner && adType == AdType.Banner)
+            else if (type == AdType.BigBanner && this.type == AdType.Banner)
             {
                 adHandler.Hide();
             }
-            if (type != adType)
+            if (type != this.type)
                 return;
             adHandler.Show();
         }
@@ -60,10 +61,18 @@ namespace SH.Ads.Base
                 Debug.LogError("AdHandler is not initialized.");
                 return;
             }
-            if (type != adType)
+            if (type == AdType.Banner && this.type == AdType.BigBanner)
+            {
+                adHandler.Hide();
+            }
+            else if (type == AdType.BigBanner && this.type == AdType.Banner)
+            {
+                adHandler.Hide();
+            }
+            if (type != this.type)
                 return;
-
-            adHandler.Remove();
+            if(adHandler.IsAdShowing)
+                adHandler.Hide();
         }
 
         public bool IsAvailable => adHandler.IsAdAvailable;

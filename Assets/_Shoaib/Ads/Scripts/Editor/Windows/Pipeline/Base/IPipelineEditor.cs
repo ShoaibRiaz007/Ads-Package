@@ -1,10 +1,10 @@
 #if UNITY_EDITOR
-using SH.Ads.Base;
 using System.Collections.Generic;
 using System;
 using UnityEditor;
 using UnityEngine;
 using System.Linq;
+using SH.Ads.Base;
 
 namespace SH.Ads.Editor.Base
 {
@@ -53,7 +53,7 @@ namespace SH.Ads.Editor.Base
         {
            
         }
-        void DisplayAdvertiser(Advertiser advertiser , ref IPipeline pipeline)
+        void DisplayAdvertiser(Ads.Base.Advertiser advertiser , ref IPipeline pipeline)
         {
 EditorGUILayout.BeginHorizontal(m_EditorButonStyle);
 
@@ -107,8 +107,8 @@ EditorGUILayout.BeginHorizontal();
 
             if (GUILayout.Button(new GUIContent("+", "Add selected Ad Unit"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
             {
-                if (!advertiser.Ads.Any(ad => ad.adType == SelectedAdType))
-                    advertiser.Ads.Add(new AD() { adType = SelectedAdType, adIds = new List<string>() });
+                if (!advertiser.Ads.Any(ad => ad.type == SelectedAdType))
+                    advertiser.Ads.Add(new AD() { type = SelectedAdType, ADIds = new List<string>() });
                 else
                     EditorUtility.DisplayDialog("Warning", $"Ad unit [{SelectedAdType}] already exist in current Advertiser.", "OK");
                 EditorUtility.SetDirty(pipeline);
@@ -127,7 +127,7 @@ EditorGUILayout.EndHorizontal();
         /// <param name="index2"></param>
         void SwapAdvertisers(int index1, int index2, ref IPipeline pipeline)
         {
-            Advertiser temp = pipeline.Advertisers[index1];
+            Ads.Base.Advertiser temp = pipeline.Advertisers[index1];
             pipeline.Advertisers[index1] = pipeline.Advertisers[index2];
             pipeline.Advertisers[index2] = temp;
         }
@@ -135,13 +135,13 @@ EditorGUILayout.EndHorizontal();
         /// Add a filter for advertiser to disallow multiple ad unit of same type
         /// </summary>
         /// <param name="advertiser"> Setting for the Advertiser</param>
-        private void FilteredAdUnitDropdown(Advertiser advertiser)
+        private void FilteredAdUnitDropdown(Ads.Base.Advertiser advertiser)
         {
             List<AdType> availableAdTypes = Enum.GetValues(typeof(AdType))
                 .Cast<AdType>()
                 .Where(adType =>
                     advertiser.advertiser.SupportsAd(adType) &&
-                    !advertiser.Ads.Any(ad => ad.adType == adType))
+                    !advertiser.Ads.Any(ad => ad.type == adType))
                 .ToList();
             int selectedIndex = availableAdTypes.IndexOf(SelectedAdType);
             selectedIndex = EditorGUILayout.Popup(new GUIContent("", "Select Ad unit type to add"), selectedIndex, availableAdTypes.Select(adType => adType.ToString()).ToArray());
@@ -156,26 +156,26 @@ EditorGUILayout.EndHorizontal();
         /// </summary>
         /// <param name="ad"></param>
         /// <param name="advertiser"></param>
-        private void DisplayAdUnit(AD ad, Advertiser advertiser, ref IPipeline pipeline)
+        private void DisplayAdUnit(AD ad, Ads.Base.Advertiser advertiser, ref IPipeline pipeline)
         {
             
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             EditorGUILayout.BeginHorizontal();
-            ad.Folded = EditorGUILayout.Foldout(ad.Folded, ad.adType.ToString(), true, new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold });
-            if ((ad.adType != AdType.Banner && ad.adType != AdType.BigBanner))
+            ad.Folded = EditorGUILayout.Foldout(ad.Folded, ad.type.ToString(), true, new GUIStyle(EditorStyles.foldout) { fontStyle = FontStyle.Bold });
+            if ((ad.type != AdType.Banner && ad.type != AdType.BigBanner))
             {
-                ad.loadAtStart = EditorGUILayout.ToggleLeft(new GUIContent("Load Ad At Start", "Load ad after intialization."), ad.loadAtStart, GUILayout.Width(120));
-                ad.loadAfterClose = EditorGUILayout.ToggleLeft(new GUIContent("Load AD On Close", "Load ad after showing ad is closed."), ad.loadAfterClose, GUILayout.Width(130));
+                ad.LoadAtStart = EditorGUILayout.ToggleLeft(new GUIContent("Load Ad At Start", "Load ad after intialization."), ad.LoadAtStart, GUILayout.Width(120));
+                ad.LoadAfterClose = EditorGUILayout.ToggleLeft(new GUIContent("Load AD On Close", "Load ad after showing ad is closed."), ad.LoadAfterClose, GUILayout.Width(130));
             }
-            else if (pipeline.Advertisers.Select(a => a.Ads).All(a => a.Where(a => (a.adType == AdType.Banner || a.adType == AdType.BigBanner) && a.loadAtStart).Count() == 0))
-                ad.loadAtStart = EditorGUILayout.ToggleLeft(new GUIContent("Show banner at start", "Load ad and show after intialization."), ad.loadAtStart, GUILayout.Width(150));
-            else if (ad.loadAtStart)
-                ad.loadAtStart = EditorGUILayout.ToggleLeft(new GUIContent("Show banner at start", "Load ad and show after intialization."), ad.loadAtStart, GUILayout.Width(150));
+            else if (pipeline.Advertisers.Select(a => a.Ads).All(a => a.Where(a => (a.type == AdType.Banner || a.type == AdType.BigBanner) && a.LoadAtStart).Count() == 0))
+                ad.LoadAtStart = EditorGUILayout.ToggleLeft(new GUIContent("Show banner at start", "Load ad and show after intialization."), ad.LoadAtStart, GUILayout.Width(150));
+            else if (ad.LoadAtStart)
+                ad.LoadAtStart = EditorGUILayout.ToggleLeft(new GUIContent("Show banner at start", "Load ad and show after intialization."), ad.LoadAtStart, GUILayout.Width(150));
            
             
             if (GUILayout.Button(new GUIContent("+", "Add new Ad ID"), GUILayout.Width(80)))
             {
-                ad.adIds.Add(string.Empty);
+                ad.ADIds.Add(string.Empty);
                 EditorUtility.SetDirty(pipeline);
             }
             if (GUILayout.Button(new GUIContent("-", "Remove Ad Unit"), GUILayout.Width(80)))
@@ -200,13 +200,18 @@ EditorGUILayout.EndHorizontal();
         private void DisplayAdIDsField(AD ad)
         {
             GUILayout.BeginVertical();
-            for (int i = 0; i < ad.adIds.Count; i++)
+            
+            ad.ADReshowTime = EditorGUILayout.Slider(new GUIContent("Ad Reshown Time", "That ad is not shown until that much time has passed in sec"), ad.ADReshowTime,0,60);
+            if (ad.ADReshowTime < 0)
+                ad.ADReshowTime = 0;
+
+            for (int i = 0; i < ad.ADIds.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
-                ad.adIds[i] = EditorGUILayout.TextField(new GUIContent($"ID {i + 1}:", "Enter the ID for this ad unit"), ad.adIds[i]);
+                ad.ADIds[i] = EditorGUILayout.TextField(new GUIContent($"ID {i + 1}:", "Enter the ID for this ad unit"), ad.ADIds[i]);
                 if (GUILayout.Button(new GUIContent("-", "Remove Ad ID"), GUILayout.Width(80)))
                 {
-                    ad.adIds.RemoveAt(i);
+                    ad.ADIds.RemoveAt(i);
                 }
                 EditorGUILayout.EndHorizontal();
             }

@@ -13,19 +13,20 @@ namespace SH.Ads.Admob
 
 
         AppOpenAd openAd;
-        float delayTime = 60;
         bool firstTIme = true;
         GameObject placeHolder;
         protected internal override bool IsAdAvailable => IsIntialized  && openAd != null && openAd.CanShowAd();
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
             firstTIme = true;
+            adReshowTime = ad.ADReshowTime;
             CreatePlaceHolder();
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()
@@ -44,20 +45,21 @@ namespace SH.Ads.Admob
         {
             if (openAd != null)
                 openAd.Destroy();
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
             if (openAd != null)
                 openAd.Destroy();
+            IsAdShowing = false;
         }
         internal override void Show()
         {
             if ( IDs.Count == 0)
                 return;
 
-            if (!OpenAdTime)
+            if (!CanAdBeShown)
                 return;
-
             if (LocalAdShown)//Don't show or load open ad if Local ad is shown
             {
                 LocalAdShown = false;
@@ -66,10 +68,10 @@ namespace SH.Ads.Admob
 
             if (IsAdAvailable)
             {
-                LocalAdShown = false;
+                IsAdShowing = true;
                 placeHolder.gameObject.SetActive(true);
                 openAd.Show();
-                lastAdwasLoaded=DateTime.Now;
+                LastAdShownTime=DateTime.Now;
             }
             else
             {
@@ -90,6 +92,7 @@ namespace SH.Ads.Admob
                     return;
                 }
                 count = 0;
+                IsAdShowing = false;
                 return;
             }
             else
@@ -99,6 +102,7 @@ namespace SH.Ads.Admob
                 openAd.OnAdFullScreenContentClosed += ()=> 
                 {
                     adLoading = false;
+                    IsAdShowing = false;
                     placeHolder.gameObject.SetActive(false);
                     if (loadAfterClose)
                         Load();
@@ -131,16 +135,6 @@ namespace SH.Ads.Admob
                 return tem;
             }
         }
-        DateTime lastAdwasLoaded = DateTime.MinValue;
-        bool OpenAdTime
-        {
-            get
-            {
-                Debug.Log("Ads status : Last Open Ad call " + (DateTime.Now - lastAdwasLoaded).TotalSeconds);
-                return (DateTime.Now - lastAdwasLoaded).TotalSeconds > delayTime;
-            }
-        }
-
         void CreatePlaceHolder()
         {
             placeHolder = new GameObject("OpenAd Placeholder", typeof(RectTransform));

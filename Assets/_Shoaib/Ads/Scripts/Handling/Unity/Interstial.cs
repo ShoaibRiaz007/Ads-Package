@@ -9,13 +9,14 @@ namespace SH.Ads.Unity
     {
         bool adLoaded = false;
         protected internal override bool IsAdAvailable => IsIntialized  && adLoaded;
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
             Debug.Log(this + " is intialized with "+  IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()
@@ -32,11 +33,12 @@ namespace SH.Ads.Unity
         }
         internal override void Hide()
         {
-            
+            IsAdShowing = false;
 
         }
         internal override void Remove()
         {
+            IsAdShowing = false;
         }
         internal override void Show()
         {
@@ -45,7 +47,8 @@ namespace SH.Ads.Unity
             if (IsAdAvailable)
             {
                 Advertisement.Show(IDs[count], this);
-               LocalAdShown = true;
+                LocalAdShown = true;
+                IsAdShowing = true;
             }
             else
                 Load();
@@ -80,6 +83,7 @@ namespace SH.Ads.Unity
         public void OnUnityAdsShowStart(string placementId)
         {
             Debug.Log($"Ad log : {this} shown scuess :  {count}");
+            IsAdShowing = true;
         }
 
         public void OnUnityAdsShowClick(string placementId)
@@ -90,6 +94,7 @@ namespace SH.Ads.Unity
         public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
         {
             Debug.Log($"Ad log : {this} shown complete :  {count}");
+            IsAdShowing = false;
             if (loadAfterClose)
                 Load();
         }

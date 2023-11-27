@@ -1,5 +1,7 @@
 using SH.Ads.Base;
 using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using UnityEngine;
 
 namespace SH.Ads.Piplines
@@ -28,24 +30,29 @@ namespace SH.Ads.Piplines
 
         public override void ShowAd(AdType adType)
         {
-            foreach (var rule in m_AdRules)
+            int shownAdvertiserIndex = ShowRuleAd(adType);
+
+            if (shownAdvertiserIndex != -1)
             {
-                if (adType == rule.m_AdType)
-                {
-                    foreach (var advertiser in Advertisers)
-                    {
-                        if (advertiser.advertiser == rule.m_Advertiser)
-                            if (advertiser.ShowAd(adType))
-                                return;
-                    }
-                    return;
-                }
+                Advertisers.Where(a => a.advertiser != Advertisers[shownAdvertiserIndex].advertiser)
+                           .ToList()
+                           .ForEach(a => a.RemoveAd(adType));
             }
-            if (adType == AdType.Rewarded || adType == AdType.RewardedInterstial)
+        }
+
+        int ShowRuleAd(AdType adType)
+        {
+            var rule = m_AdRules.FirstOrDefault(r => r.m_AdType == adType);
+            var advertiser = Advertisers.FirstOrDefault(a => rule != null && a.advertiser == rule.m_Advertiser && a.ShowAd(adType));
+
+            if (advertiser == null && (adType == AdType.Rewarded || adType == AdType.RewardedInterstial))
             {
                 BaseAdHandler.AdNotAvailble();
             }
+
+            return advertiser?.order ?? -1;
         }
+
 
     }
 }

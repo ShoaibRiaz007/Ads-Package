@@ -13,7 +13,7 @@ namespace SH.Ads.Admob
     internal class Manager : BaseManager
     {
         bool loadingConcent = true;
-        internal override IEnumerator Initialize(Advertiser advertiser, bool isForChildren, string ageGroup)
+        internal override IEnumerator Initialize(Base.Advertiser advertiser, bool isForChildren, string ageGroup)
         {
             yield return IsNetworkAvailable();
 

@@ -2,6 +2,7 @@
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,14 +16,16 @@ namespace SH.Ads.Admob
         AdType adType;
         GameObject placeHolder;
         protected internal override bool IsAdAvailable => IsIntialized  && bannerView!=null;
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
            
-            IDs = ad.adIds;
-            adType = ad.adType;
+            IDs = ad.ADIds;
+            adType = ad.type;
+            adReshowTime = ad.ADReshowTime;
             IsIntialized = true;
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
             CreatePlaceHolder();
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
@@ -64,6 +67,7 @@ namespace SH.Ads.Admob
                     Debug.Log("Ad log : Banner loaded :  " + count);
                     placeHolder?.gameObject.SetActive(true);
                     adLoading = false;
+                    IsAdShowing = true;
                 };
                 bannerView.OnAdImpressionRecorded += () =>
                 {
@@ -82,23 +86,28 @@ namespace SH.Ads.Admob
         {
             if (IsAdAvailable)
                 bannerView.Hide();
-
+            IsAdShowing = false;
             placeHolder?.gameObject.SetActive(false);
         }
         internal override void Remove()
         {
             if (IsAdAvailable)
                 bannerView.Destroy();
+            IsAdShowing = false;
             placeHolder?.gameObject.SetActive(false);
         }
         internal override void Show()
         {
             if ( IDs.Count == 0)
                 return;
-
+            if (!CanAdBeShown)
+                return;
+            
             if (IsAdAvailable)
             {
+                IsAdShowing = true;
                 placeHolder?.gameObject.SetActive(true);
+                LastAdShownTime = DateTime.Now;
                 bannerView.Show();
             }
             else

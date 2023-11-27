@@ -2,6 +2,7 @@
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
+using System;
 using UnityEngine;
 
 namespace SH.Ads.Admob
@@ -13,12 +14,14 @@ namespace SH.Ads.Admob
 
         RewardedAd rewardedAd;
         protected internal override bool IsAdAvailable => IsIntialized  && rewardedAd != null && rewardedAd.CanShowAd();
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            adReshowTime = ad.ADReshowTime;
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
         }
@@ -37,21 +40,27 @@ namespace SH.Ads.Admob
         {
             if (rewardedAd != null)
                 rewardedAd.Destroy();
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
             if (rewardedAd != null)
                 rewardedAd.Destroy();
+            IsAdShowing = false;
         }
         internal override void Show()
         {
             if ( IDs.Count == 0)
                 return;
-
+            if (!CanAdBeShown)
+                return;
+            
             if (IsAdAvailable)
             {
                 AdsManager.BGRunnerInstance.StartCoroutine(ShowRewardedPlaceholder(() => {
                     LocalAdShown = true;
+                    IsAdShowing = true;
+                    LastAdShownTime = DateTime.Now;
                     rewardedAd.Show(HandleUserEarnedReward);
                 }));
             }
@@ -80,6 +89,7 @@ namespace SH.Ads.Admob
                     Load();
                     return;
                 }
+                IsAdShowing = false;
                 count = 0;
             }
             else
@@ -88,6 +98,7 @@ namespace SH.Ads.Admob
                 rewardedAd.OnAdFullScreenContentClosed += ()=>
                 {
                     adLoading = false;
+                    IsAdShowing = false;
                     if (loadAfterClose)
                         Load();
                 };

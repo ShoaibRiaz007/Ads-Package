@@ -2,6 +2,7 @@
 using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
+using System;
 using UnityEngine;
 
 namespace SH.Ads.Admob
@@ -13,14 +14,15 @@ namespace SH.Ads.Admob
 
         InterstitialAd interstitial;
         protected internal override bool IsAdAvailable => IsIntialized  && interstitial != null && interstitial.CanShowAd();
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
-
+            adReshowTime = ad.ADReshowTime;
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()
@@ -38,20 +40,31 @@ namespace SH.Ads.Admob
         {
             if (interstitial != null)
                 interstitial.Destroy();
+
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
             if (interstitial != null)
                 interstitial.Destroy();
+
+            IsAdShowing = false;
         }
         internal override void Show()
         {
             if ( IDs.Count == 0)
                 return;
+
+            if (!CanAdBeShown)
+                return;
+            
+
             if (IsAdAvailable)
             {
+                IsAdShowing = true;
                 LocalAdShown = true;
                 interstitial.Show();
+                LastAdShownTime = DateTime.Now;
             }
             else
             {
@@ -72,6 +85,7 @@ namespace SH.Ads.Admob
                     Load();
                     return;
                 }
+                IsAdShowing = false;
                 count = 0;
             }
             else
@@ -80,6 +94,7 @@ namespace SH.Ads.Admob
                 interstitial.OnAdFullScreenContentClosed += ()=> 
                 {
                     adLoading = false;
+                    IsAdShowing = false;
                     if (loadAfterClose)
                         Load();
                 };

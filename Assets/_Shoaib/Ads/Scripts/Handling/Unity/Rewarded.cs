@@ -9,13 +9,14 @@ namespace SH.Ads.Unity
     {
         bool adLoaded = false;
         protected internal override bool IsAdAvailable => IsIntialized  && adLoaded;
+        protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()
@@ -32,12 +33,11 @@ namespace SH.Ads.Unity
         }
         internal override void Hide()
         {
-            if (IsAdAvailable)
-                Advertisement.Banner.Hide(false);
-
+            IsAdShowing = false;
         }
         internal override void Remove()
         {
+            IsAdShowing = false;
         }
         internal override void Show()
         {
@@ -48,6 +48,7 @@ namespace SH.Ads.Unity
             {
                 Advertisement.Show(IDs[count], this);
                 LocalAdShown = true;
+                IsAdShowing = true;
             }
             else
                 Load();
@@ -69,14 +70,17 @@ namespace SH.Ads.Unity
                 return;
             }
             count = 0;
+            IsAdShowing = false;
             return;
         }
         public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
         {
             Debug.Log($"Ad log : {this} shown falure :  {count} cause : {message}");
+            IsAdShowing = false;
         }
         public void OnUnityAdsShowStart(string placementId)
         {
+            IsAdShowing = true;
             Debug.Log($"Ad log : {this} shown scuess :  {count}");
         }
         public void OnUnityAdsShowClick(string placementId)
@@ -86,7 +90,8 @@ namespace SH.Ads.Unity
         public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
         {
             Debug.Log($"Ad log : {this} shown complete :  {count}");
-            if(loadAfterClose)
+            IsAdShowing = false;
+            if (loadAfterClose)
                 Load();
             if(showCompletionState == UnityAdsShowCompletionState.COMPLETED)
             {
