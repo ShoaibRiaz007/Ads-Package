@@ -11,7 +11,7 @@ namespace SH.Ads.Facebook
     /// </summary>
     internal class Manager : BaseManager
     {
-        internal override IEnumerator Initialize(Advertiser advertiser, bool isForChildren, string ageGroup)
+        internal override IEnumerator Initialize(Base.Advertiser advertiser, bool isForChildren, string ageGroup)
         {
              yield return IsNetworkAvailable();
 

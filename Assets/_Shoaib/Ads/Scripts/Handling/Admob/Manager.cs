@@ -86,28 +86,36 @@ namespace SH.Ads.Admob
 
         void SetupUMPForm()
         {
-            ConsentRequestParameters request = null;
-            if (AdSettings.TestMode)
+            try
             {
-                var debugSettings = new ConsentDebugSettings
+                ConsentRequestParameters request = null;
+                if (AdSettings.TestMode)
                 {
-                    DebugGeography = DebugGeography.EEA,
-                    TestDeviceHashedIds = AdSettings.TestDevices,
-                };
-                request = new ConsentRequestParameters
+                    var debugSettings = new ConsentDebugSettings
+                    {
+                        DebugGeography = DebugGeography.EEA,
+                        TestDeviceHashedIds = AdSettings.TestDevices,
+                    };
+                    request = new ConsentRequestParameters
+                    {
+                        TagForUnderAgeOfConsent = AdSettings.IsForChildren,
+                        ConsentDebugSettings = debugSettings
+                    };
+                }
+                else
                 {
-                    TagForUnderAgeOfConsent = AdSettings.IsForChildren,
-                     ConsentDebugSettings = debugSettings
-                };
-            }
-            else
+                    request = new ConsentRequestParameters
+                    {
+                        TagForUnderAgeOfConsent = AdSettings.IsForChildren,
+                    };
+                }
+                ConsentInformation.Update(request, OnConsentInfoUpdated);
+            } catch(System.Exception e)
             {
-                request = new ConsentRequestParameters
-                {
-                    TagForUnderAgeOfConsent = AdSettings.IsForChildren,
-                };
+                Debug.LogError("Ads Log: Unable to start ump form. Check google console to add UMP in the game :\n" + e.Message);
+                loadingConcent = false;
             }
-            ConsentInformation.Update(request, OnConsentInfoUpdated);
+
         }
 
 

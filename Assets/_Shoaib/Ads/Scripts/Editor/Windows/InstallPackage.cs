@@ -29,6 +29,7 @@ namespace SH.Ads.Editor
             Extensions.CheckForInstalledPackages();
             ListFilesInFolder(DependenceisPath);
             ImportingInProgress = false;
+            EditorUtility.SetDirty(settings);
         }
 
         public override void OnGUI()
@@ -88,10 +89,16 @@ namespace SH.Ads.Editor
                         if (path.Contains("IronSource"))
                             ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
                     return;
+                case SupportedAdvertisers.AppLovin:
+                    foreach (var path in files)
+                        if (path.Contains("AppLovin"))
+                            ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
+                    return;
                 case SupportedAdvertisers.Unity:
                     InstalledUnityPackage(UnityAd);
                     ShowOption(advertiser.IsInstalled());
                     return;
+               
             }
         }
         void ShowOption(string name, string path, bool isInstalled)
@@ -105,10 +112,16 @@ namespace SH.Ads.Editor
                 AssetDatabase.importPackageCancelled += ImportPackageCanceled;
                 AssetDatabase.importPackageStarted += ImportPackageStarted;
                 AssetDatabase.importPackageFailed += ImportPackageFailed;
+                AssetDatabase.onImportPackageItemsCompleted += ImportedItems;
                 AssetDatabase.ImportPackage(path, true);
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        private void ImportedItems(string[] obj)
+        {
+            Debug.Log("Files Imported :"+obj.Length);
         }
 
         void ShowOption(bool isInstalled)

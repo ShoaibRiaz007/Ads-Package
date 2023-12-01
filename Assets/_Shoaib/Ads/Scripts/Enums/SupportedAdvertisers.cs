@@ -8,12 +8,12 @@ namespace SH.Ads
         Facebook,
         AdColony,
         IronSource,
+        AppLovin,
+        Unity,
+
         // Chartboost = 4,
         // Heyzap = 5,
-        // AppLovin = 6,
         //MoPub = 7,
         // Vungle = 8,
-        Unity,
-      
     }
 }

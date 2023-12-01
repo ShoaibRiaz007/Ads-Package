@@ -13,12 +13,12 @@ namespace SH.Ads.Facebook
         AdType adType;
         internal override void Intialize(AD ad)
         {
-            IDs = ad.adIds;
+            IDs = ad.ADIds;
             IsIntialized = true;
-            adType = ad.adType;
+            adType = ad.type;
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
         }
         protected override void Load()

@@ -21,6 +21,8 @@ namespace SH.Ads.Editor
                 pipelineEditor = new WaterfallEditor();
             else 
                 pipelineEditor = new CustomWaterfallEditor();
+
+            EditorUtility.SetDirty(settings);
         }
 
         public override void OnGUI()

@@ -32,7 +32,7 @@ namespace SH.Ads
         [SerializeField, Header("Ads Setting")] float m_RewardAmountForRewardedAds = 500;
         [SerializeField,Tooltip("Show Test Ads")] bool m_TestMode ;
         [SerializeField]List<string> m_TestDeviceIDs = new List<string>();
-        [HideInInspector] public IPipeline CurrentPipline;
+        [SerializeField] public IPipeline CurrentPipline;
 
         [SerializeField, Header("If null then default assets would be used"), Header("UI Prefabs")]
         GameObject m_RewardedAdsPrefab;

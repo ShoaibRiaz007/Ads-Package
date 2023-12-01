@@ -16,11 +16,11 @@ namespace SH.Ads.AdColony
         protected internal override bool IsAdShowing { get; protected set; }
         internal override void Intialize(AD ad)
         {
-           IDs = ad.adIds;
+           IDs = ad.ADIds;
             IsIntialized = true;
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
-            loadAfterClose = ad.loadAfterClose;
-            if (ad.loadAtStart)
+            loadAfterClose = ad.LoadAfterClose;
+            if (ad.LoadAtStart)
                 Load();
             ColonyAd.OnExpiring += OnAdLoad;
         }

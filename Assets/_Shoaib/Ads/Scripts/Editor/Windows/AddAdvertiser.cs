@@ -23,6 +23,7 @@ namespace SH.Ads.Editor
         public override void OnEnable(AdSettings settings)
         {
             AdSetting = settings;
+            EditorUtility.SetDirty(settings);
         }
 
         public override void OnGUI()

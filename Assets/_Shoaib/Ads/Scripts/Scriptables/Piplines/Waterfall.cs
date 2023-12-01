@@ -11,17 +11,5 @@ namespace SH.Ads.Piplines
             "and if unavailable, it will fall back to Unity or any other advertiser you added" +
             "\n\nThis Waterfall Pipeline allows efficient utilization of multiple ad platforms, " +
             "ensuring ads are served from the first available advertiser for each ad type.";
-
-        public override void ShowAd(AdType adType)
-        {
-            foreach (var t in Advertisers)
-            {
-                if (t.ShowAd(adType))
-                    return;
-            }
-
-            if (adType == AdType.Rewarded || adType == AdType.RewardedInterstial)
-                BaseAdHandler.AdNotAvailble();
-        }
     }
 }

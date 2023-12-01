@@ -52,11 +52,10 @@ namespace SH.Ads.Base
         {
             if (AdSettings.RemoveAd)
                 return true;
-
+            var available = IsAdAvailable(type);
             foreach (var tem in Ads)
                  tem.ShowAd(type);
-
-            return IsAdAvailable(type);
+            return available;
         }
 
         public void RemoveAd(AdType type)

@@ -25,9 +25,10 @@ namespace SH.Ads.Admob
             adReshowTime = ad.ADReshowTime;
             IsIntialized = true;
             loadAfterClose = ad.LoadAfterClose;
+            CreatePlaceHolder();
             if (ad.LoadAtStart)
                 Load();
-            CreatePlaceHolder();
+
             Debug.Log(this + " is intialized with " + IDs.Count + " ad Ids");
         }
         protected override void Load()
@@ -41,7 +42,7 @@ namespace SH.Ads.Admob
                 switch (adType)
                 {
                     case AdType.Banner:
-                        bannerView = new BannerView(TestMode ? _Test_ID : IDs[count],Screen.orientation == ScreenOrientation.Landscape? AdSize.GetLandscapeAnchoredAdaptiveBannerAdSizeWithWidth(Screen.width) : AdSize.GetPortraitAnchoredAdaptiveBannerAdSizeWithWidth(Screen.width), AdPosition.Top);
+                        bannerView = new BannerView(TestMode ? _Test_ID : IDs[count],AdSize.Leaderboard, AdPosition.Top);
                         break;
                     case AdType.BigBanner:
                         bannerView = new BannerView(TestMode ? _Test_ID : IDs[count], AdSize.MediumRectangle, AdPosition.BottomLeft);
@@ -68,6 +69,7 @@ namespace SH.Ads.Admob
                     placeHolder?.gameObject.SetActive(true);
                     adLoading = false;
                     IsAdShowing = true;
+                    bannerView.Show();
                 };
                 bannerView.OnAdImpressionRecorded += () =>
                 {
@@ -106,7 +108,6 @@ namespace SH.Ads.Admob
             if (IsAdAvailable)
             {
                 IsAdShowing = true;
-                placeHolder?.gameObject.SetActive(true);
                 LastAdShownTime = DateTime.Now;
                 bannerView.Show();
             }

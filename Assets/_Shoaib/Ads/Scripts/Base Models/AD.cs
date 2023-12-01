@@ -75,6 +75,6 @@ namespace SH.Ads.Base
                 adHandler.Hide();
         }
 
-        public bool IsAvailable => adHandler.IsAdAvailable;
+        public bool IsAvailable => adHandler==null? false: adHandler.IsAdAvailable;
     }
 }

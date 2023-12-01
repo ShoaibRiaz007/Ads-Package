@@ -22,6 +22,8 @@ namespace SH.Ads.Editor
                 waterPipeline = Resources.Load<Waterfall>(nameof(Waterfall));
             if (CustomWaterfallPipeline == null)
                 CustomWaterfallPipeline = Resources.Load<CustomWaterfall>(nameof(CustomWaterfall));
+
+            EditorUtility.SetDirty(settings);
         }
 
         public override void OnGUI()

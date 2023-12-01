@@ -10,7 +10,7 @@ namespace SH.Ads.AdColony
 {
     class Manager : BaseManager
     {
-        internal override IEnumerator Initialize(Advertiser advertiser, bool isForChildren, string ageGroup)
+        internal override IEnumerator Initialize(Base.Advertiser advertiser, bool isForChildren, string ageGroup)
         {
             yield return IsNetworkAvailable();
 
@@ -34,7 +34,7 @@ namespace SH.Ads.AdColony
             bool isInitialized = false;
             List<string> addList = new List<string>();
             foreach(var t in advertiser.Ads)
-                addList.AddRange(t.adIds);
+                addList.AddRange(t.ADIds);
 
             ColonyAd.Configure(advertiser.ID, appOptions, addList.ToArray());
             

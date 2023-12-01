@@ -6,7 +6,6 @@ using UnityEngine;
 using System.IO;
 using System.Collections.Generic;
 using SH.Ads.Editor;
-using SH.Ads.Base;
 using SH.Ads;
 
 namespace SH
@@ -72,6 +71,9 @@ namespace SH
                         break;
                     case Ads.SupportedAdvertisers.IronSource:
                         isInsalled = Assembly.Load("Assembly-CSharp")?.GetType("IronSource") != null;
+                        break;
+                   case Ads.SupportedAdvertisers.AppLovin:
+                        isInsalled = Assembly.Load("MaxSdk.Scripts")?.GetType("MaxSdk") != null;
                         break;
                     default:
                         Debug.LogError("Not Implemented yet");
@@ -225,6 +227,23 @@ namespace SH
                         if (type != null)
                         {
                             var propertyInfo = type.GetProperty("Build", BindingFlags.Public | BindingFlags.Static);
+                            if (propertyInfo != null)
+                            {
+                                version = "Version " + propertyInfo.GetValue(null);
+                                Debug.Log(version);
+                                Versions.Add(advertiser, version);
+                            }
+                        }
+                    }
+                    break;
+                case Ads.SupportedAdvertisers.AppLovin:
+                    assembly = Assembly.Load("MaxSdk.Scripts");
+                    if (assembly != null)
+                    {
+                        Type type = assembly.GetType("MaxSdk");
+                        if (type != null)
+                        {
+                            var propertyInfo = type.GetProperty("Version", BindingFlags.Public | BindingFlags.Static);
                             if (propertyInfo != null)
                             {
                                 version = "Version " + propertyInfo.GetValue(null);
