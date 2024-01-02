@@ -115,9 +115,9 @@ EditorGUILayout.BeginHorizontal();
             }
 EditorGUILayout.EndHorizontal();
            
-            foreach (var ad in advertiser.Ads)
+            for(int i=0;i<advertiser.Ads.Count;i++)
             {
-                DisplayAdUnit(ad, advertiser, ref pipeline);
+                DisplayAdUnit(advertiser.Ads[i], advertiser, ref pipeline);
             }
         }
         /// <summary>

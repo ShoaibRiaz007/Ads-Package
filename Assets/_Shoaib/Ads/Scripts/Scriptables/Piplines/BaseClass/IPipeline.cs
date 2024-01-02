@@ -6,14 +6,14 @@ namespace SH.Ads.Base
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class IPipeline : ScriptableObject
+    public abstract class IPipeline : ScriptableObject
     {
-        [field: SerializeField] public virtual string Name { get; }
-        [field: SerializeField] public virtual string Description { get; }
         [HideInInspector]public List<Advertiser> Advertisers = new List<Advertiser>();
 
 #if UNITY_EDITOR
         [NonSerialized] public bool Folded = false;
+        [field: SerializeField] public abstract string Name { get; }
+        [field: SerializeField] public abstract string Description { get; }
 #endif
         public IEnumerator Intialize()
         {

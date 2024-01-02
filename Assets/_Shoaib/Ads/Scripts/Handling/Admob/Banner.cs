@@ -3,6 +3,7 @@ using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
 using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,6 +52,7 @@ namespace SH.Ads.Admob
                 bannerView.OnBannerAdLoadFailed += (arg)=> 
                 {
                     Debug.Log($"Ad log : {this} Failed :  {count} cause : {arg.GetCause()}");
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", arg.GetCause().GetMessage());
                     placeHolder.gameObject.SetActive(false);
                     bannerView = null;
                     adLoading = false;
@@ -66,6 +68,7 @@ namespace SH.Ads.Admob
                 bannerView.OnBannerAdLoaded += () => 
                 {
                     Debug.Log("Ad log : Banner loaded :  " + count);
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
                     placeHolder?.gameObject.SetActive(true);
                     adLoading = false;
                     IsAdShowing = true;
@@ -73,10 +76,12 @@ namespace SH.Ads.Admob
                 };
                 bannerView.OnAdImpressionRecorded += () =>
                 {
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Impression", count.ToString());
                     Debug.Log("Ad log : Banner impression Recorded :  " + count);
                 };
                 bannerView.OnAdPaid += (v) =>
                 {
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_OnPaid", v.Value.ToString());
                     Debug.Log("Ad log : Banner ad paid :  " + v.Value);
                 };
                

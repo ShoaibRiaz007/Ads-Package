@@ -3,6 +3,7 @@ using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
 using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace SH.Ads.Admob
@@ -66,6 +67,7 @@ namespace SH.Ads.Admob
                     LocalAdShown = true;
                     LastAdShownTime = DateTime.Now;
                     interStialReward.Show(HandleUserEarnedReward);
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Show", count.ToString());
                 }));
             }
             else
@@ -92,16 +94,20 @@ namespace SH.Ads.Admob
                 };
                 interStialReward.OnAdImpressionRecorded += () =>
                 {
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Impression", count.ToString());
                     Debug.Log("Ad log : Interstial Rewarded impression Recorded :  " + count);
                 };
                 interStialReward.OnAdPaid += (v) =>
                 {
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", v.Value.ToString());
                     Debug.Log("Ad log : Interstial rewarded paid :  " + v.Value);
                 };
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
             }
             else
             {
                 Debug.Log($"Ad log : {this} Failed :  {count} cause : {error.GetCause()}");
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", error.GetCause().GetMessage());
                 interStialReward = null;
                 if (count + 1 <  IDs.Count)
                 {

@@ -3,6 +3,7 @@ using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
 using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace SH.Ads.Admob
@@ -71,7 +72,8 @@ namespace SH.Ads.Admob
                 IsAdShowing = true;
                 placeHolder.gameObject.SetActive(true);
                 openAd.Show();
-                LastAdShownTime=DateTime.Now;
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Show", count.ToString());
+                LastAdShownTime =DateTime.Now;
             }
             else
             {
@@ -84,6 +86,7 @@ namespace SH.Ads.Admob
             {
                 openAd = null;
                 placeHolder.gameObject.SetActive(false);
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", error.GetCause().GetMessage());
                 Debug.Log($"Ad log : {this} Failed :  {count} cause : {error.GetCause()}");
                 if (count + 1 <  IDs.Count)
                 {
@@ -110,10 +113,12 @@ namespace SH.Ads.Admob
                 openAd.OnAdFullScreenContentOpened += () => { placeHolder.gameObject.SetActive(true); };
                 openAd.OnAdImpressionRecorded += () =>
                 {
-                     Debug.Log("Ad log : Open impression Recorded :  " + count);
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Impression", count.ToString());
+                    Debug.Log("Ad log : Open impression Recorded :  " + count);
                 };
                 openAd.OnAdPaid += (v) =>
                 {
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Paid", v.Value.ToString());
                     Debug.Log("Ad log : Open ad paid :  " + v.Value);
                 };
 
@@ -122,6 +127,7 @@ namespace SH.Ads.Admob
                     firstTIme = false;
                     Show();
                 }
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
             }
         }
         AdRequest AdRequestBuild

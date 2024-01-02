@@ -31,11 +31,12 @@ namespace SH.Ads.Facebook
                 adInstance = new InterstitialAd(IDs[count]);
                 adInstance.Register(new GameObject("Handler Facebook Interstial"));
 
-                adInstance.InterstitialAdDidLoad += ()=> { adLoading = false; };
+                adInstance.InterstitialAdDidLoad += ()=> { adLoading = false; AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString()); };
                 adInstance.InterstitialAdDidFailWithError += (error)=> 
                 { 
                     adLoading = false;
                     Debug.Log($"Ad log : {this} Failed :  {count} cause : {error}");
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", error);
                     if (count + 1 < IDs.Count)
                     {
                         count++;

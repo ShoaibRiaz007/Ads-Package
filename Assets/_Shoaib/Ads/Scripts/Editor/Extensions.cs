@@ -72,8 +72,16 @@ namespace SH
                     case Ads.SupportedAdvertisers.IronSource:
                         isInsalled = Assembly.Load("Assembly-CSharp")?.GetType("IronSource") != null;
                         break;
-                   case Ads.SupportedAdvertisers.AppLovin:
-                        isInsalled = Assembly.Load("MaxSdk.Scripts")?.GetType("MaxSdk") != null;
+                    case Ads.SupportedAdvertisers.AppLovin:
+                        try
+                        {
+                            isInsalled = Assembly.Load("MaxSdk.Scripts")?.GetType("MaxSdk") != null;
+                        }
+                        catch
+                        {
+                            isInsalled= false;
+                        }
+                        
                         break;
                     default:
                         Debug.LogError("Not Implemented yet");
@@ -289,7 +297,16 @@ namespace SH
         {
             AddSymbol(advertiser.ToString());
         }
-        static void AddSymbol(string symbolToAdd)
+
+        public static void AddToRegistry(string PackageID)
+        {
+            AddSymbol(PackageID);
+        }
+        public static void RemovefromRegistry(string PackageID)
+        {
+            RemoveSymbol(PackageID);
+        }
+        internal static void AddSymbol(string symbolToAdd)
         {
             BuildTargetGroup targetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
             string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);
@@ -305,7 +322,7 @@ namespace SH
                 EditorUtility.DisplayDialog("Symbol Already Present", $"The '{symbolToAdd}' symbol is already defined.", "OK");
             }
         }
-        static void RemoveSymbol(string symbolToRemove)
+        internal static void RemoveSymbol(string symbolToRemove)
         {
             BuildTargetGroup targetGroup = EditorUserBuildSettings.selectedBuildTargetGroup;
             string defines = PlayerSettings.GetScriptingDefineSymbolsForGroup(targetGroup);

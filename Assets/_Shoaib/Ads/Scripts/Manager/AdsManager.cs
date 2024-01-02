@@ -62,6 +62,21 @@ namespace SH.Ads
             }
         }
         /// <summary>
+        /// Log an Event on firebase analystics
+        /// </summary>
+        /// <param name="EventName">Event Name like [Level_Complete_]</param>
+        /// <param name="ParameterName">Parameter name like [Level_]</param>
+        /// <param name="ParameterValue">Parameter Value Like [1] or ["Completed"]</param>
+        public static void LogAnalyticEvent(string EventName,string ParameterName, string ParameterValue)
+        {
+#if FirebaseAnalytics
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(EventName, ParameterName, ParameterValue);
+#else
+            Debug.Log("Ad log : Firebase analytics is not enbaled");
+#endif
+        }
+
+        /// <summary>
         /// Intialize All Advertisers
         /// </summary>
         /// <param name="NPAConcent"></param>

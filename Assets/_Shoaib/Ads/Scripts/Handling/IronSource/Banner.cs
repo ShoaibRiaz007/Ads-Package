@@ -1,5 +1,6 @@
 ﻿#if IronSource
 using SH.Ads.Base;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 using IronsourceAgent = IronSource;
@@ -26,11 +27,13 @@ namespace SH.Ads.IronSource
                 Debug.Log($"Ad log : {this} ad is loaded ad displayed : {count}");
                 adUnit = ad;
                 adLoading = false;
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
             };
 
             IronSourceBannerEvents.onAdLoadFailedEvent += (ad) =>
             {
                 Debug.Log($"Ad log : {this} ad failled to load : {count}");
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", ad.getCode().ToString());
                 adLoading = false;
                 if (count + 1 < IDs.Count)
                 {

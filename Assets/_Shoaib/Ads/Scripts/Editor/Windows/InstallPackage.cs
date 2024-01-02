@@ -1,4 +1,6 @@
 #if UNITY_EDITOR
+using DG.Tweening.Plugins.Core.PathCore;
+using SH.Ads.Base;
 using SH.Ads.Editor.Base;
 using System;
 using System.Collections.Generic;
@@ -14,9 +16,10 @@ namespace SH.Ads.Editor
     public class InstallPackage : IWindow
     {
         const string DependenceisPath = "Assets/_Shoaib/Ads/Dependencies";
+        const string DependenceisAdonsPath = "Assets/_Shoaib/Ads/Dependencies/Adons";
         const string UnityAd = "com.unity.ads";
         static bool ImportingInProgress = false, InstallingUnityPackage = false;
-        static List<string> files = new List<string>();
+        static List<string> AdvertiserPackages = new List<string>(), AdonsPackages = new List<string>();
         static ListRequest InstalledPackages;
         AddRequest installingPackage;
         static Vector2 scrollPos;
@@ -27,7 +30,7 @@ namespace SH.Ads.Editor
         public override void OnEnable(AdSettings settings)
         {
             Extensions.CheckForInstalledPackages();
-            ListFilesInFolder(DependenceisPath);
+            ListFilesInFolder();
             ImportingInProgress = false;
             EditorUtility.SetDirty(settings);
         }
@@ -37,24 +40,43 @@ namespace SH.Ads.Editor
             Header();
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos, new GUIStyle(EditorStyles.helpBox));
             if (!ImportingInProgress)
+            {
+                EditorGUILayout.LabelField("Packages : ", new GUIStyle(EditorStyles.boldLabel) { fontSize = 30, fixedHeight = 30 });
+                EditorGUILayout.Space(30);
                 foreach (var t in Enum.GetValues(typeof(SupportedAdvertisers)).Cast<SupportedAdvertisers>())
                     ShowAdvertiser(t);
+
+                EditorGUILayout.Space(50);
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.LabelField("Ad Ons : ", new GUIStyle(EditorStyles.boldLabel) { fontSize=40, fixedHeight=50});
+                EditorGUILayout.Space(30);
+                for (int i = 0; i < AdonsPackages.Count; i++)
+                {
+                    ShowOption(AdonsPackages[i].Split('\\')[1], AdonsPackages[i], false);
+                }
+
+                EditorGUILayout.EndVertical();
+            }
             else
                 EditorGUILayout.HelpBox("Importing package is in progress. Please wait for it complete.", MessageType.Warning);
 
             EditorGUILayout.EndScrollView();
         }
 
-        static void ListFilesInFolder(string path)
+        static void ListFilesInFolder()
         {
-            if (Directory.Exists(path))
+            if (Directory.Exists(DependenceisPath))
             {
-                files = new List<string>();
-                files.AddRange(Directory.GetFiles(path));
-                files = files.Where(a => !a.Contains(".meta")).ToList();
+                AdvertiserPackages = new List<string>();
+                AdvertiserPackages.AddRange(Directory.GetFiles(DependenceisPath));
+                AdvertiserPackages = AdvertiserPackages.Where(a => !a.Contains(".meta")).ToList();
+
+                AdonsPackages = new List<string>();
+                AdonsPackages.AddRange(Directory.GetFiles(DependenceisAdonsPath));
+                AdonsPackages = AdonsPackages.Where(a => !a.Contains(".meta")).ToList();
             }
             else
-                EditorUtility.DisplayDialog("Error", $"Dictionary  [{DependenceisPath}] not found. Please create folder and place dependent packages in it.", "OK");
+                EditorUtility.DisplayDialog("Error", $"Dictionary  [{DependenceisPath}] or [{DependenceisAdonsPath}] not found. Please create folder and place dependent packages in it.", "OK");
 
         }
 
@@ -70,27 +92,27 @@ namespace SH.Ads.Editor
             switch (advertiser)
             {
                 case SupportedAdvertisers.Admob:
-                    foreach (var path in files)
+                    foreach (var path in AdvertiserPackages)
                         if (path.Contains("GoogleMobileAds"))
                             ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.AdColony:
-                    foreach (var path in files)
+                    foreach (var path in AdvertiserPackages)
                         if (path.Contains("AdColony"))
                             ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.Facebook:
-                    foreach (var path in files)
+                    foreach (var path in AdvertiserPackages)
                         if (path.Contains("audience"))
                             ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.IronSource:
-                    foreach (var path in files)
+                    foreach (var path in AdvertiserPackages)
                         if (path.Contains("IronSource"))
                             ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.AppLovin:
-                    foreach (var path in files)
+                    foreach (var path in AdvertiserPackages)
                         if (path.Contains("AppLovin"))
                             ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
                     return;

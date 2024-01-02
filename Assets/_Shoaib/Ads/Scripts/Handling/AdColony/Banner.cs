@@ -85,12 +85,14 @@ namespace SH.Ads.AdColony
         {
             adLoading = false;
             adView = view;
+            AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
         }
 
         private void OnAdFailedToLoad(AdView view)
         {
             adLoading = false;
             Debug.Log($"Ad log : {this} Failed :  " + count);
+            AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail",count.ToString());
             adView = null;
             if (count + 1 <  IDs.Count)
             {
@@ -100,7 +102,6 @@ namespace SH.Ads.AdColony
             }
             count = 0;
             IsAdShowing = false;
-            return;
         }
 
 

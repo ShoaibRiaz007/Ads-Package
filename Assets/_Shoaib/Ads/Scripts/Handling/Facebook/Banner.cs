@@ -36,11 +36,12 @@ namespace SH.Ads.Facebook
                     adInstance = new AdView(IDs[count], AdSize.RECTANGLE_HEIGHT_250);
 
                 adInstance.Register(new GameObject("Handler Facebook Banner"));
-                adInstance.AdViewDidLoad += () => { adLoading = false; };
+                adInstance.AdViewDidLoad += () => { adLoading = false; AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString()); };
                 adInstance.AdViewDidFailWithError += (error) =>
                 {
                     adLoading = false;
                     Debug.Log($"Ad log : {this} Failed :  {count} cause : {error}");
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", error);
                     if (count + 1 < IDs.Count)
                     {
                         count++;

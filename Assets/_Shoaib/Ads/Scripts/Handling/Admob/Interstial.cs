@@ -64,6 +64,8 @@ namespace SH.Ads.Admob
                 IsAdShowing = true;
                 LocalAdShown = true;
                 interstitial.Show();
+
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Show", count.ToString());
                 LastAdShownTime = DateTime.Now;
             }
             else
@@ -78,6 +80,7 @@ namespace SH.Ads.Admob
             if (error != null)
             {
                 Debug.Log($"Ad log : {this} Failed :  {count} cause : {error.GetCause()}");
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", error.GetCause().GetMessage());
                 if (count + 1 <  IDs.Count)
                 {
                     count++;
@@ -91,6 +94,7 @@ namespace SH.Ads.Admob
             else
             {
                 interstitial = ad;
+                
                 interstitial.OnAdFullScreenContentClosed += ()=> 
                 {
                     adLoading = false;
@@ -100,12 +104,15 @@ namespace SH.Ads.Admob
                 };
                 interstitial.OnAdImpressionRecorded += () =>
                 {
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Impression", count.ToString());
                     Debug.Log($"Ad log : Interstial impression Recorded :  " + count);
                 };
                 interstitial.OnAdPaid += (v) =>
                 {
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Paid", v.Value.ToString());
                     Debug.Log("Ad log : Interstial ad paid :  " + v.Value);
                 };
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
             }
         }
 

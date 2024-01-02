@@ -1,8 +1,8 @@
 using SH.Ads.Base;
-using SH.Ads.Piplines;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 namespace SH.Ads
@@ -32,15 +32,22 @@ namespace SH.Ads
         [SerializeField, Header("Ads Setting")] float m_RewardAmountForRewardedAds = 500;
         [SerializeField,Tooltip("Show Test Ads")] bool m_TestMode ;
         [SerializeField]List<string> m_TestDeviceIDs = new List<string>();
-        [SerializeField] public IPipeline CurrentPipline;
+       
 
         [SerializeField, Header("If null then default assets would be used"), Header("UI Prefabs")]
         GameObject m_RewardedAdsPrefab;
 
+        public List<Adons.AdOn> m_AdOns = new List<Adons.AdOn>();
 
-
+        [HideInInspector] public IPipeline CurrentPipline;
         internal static IEnumerator IntializeAdsHandler(Action OnComplete=null)
         {
+            foreach(var t in Instance.m_AdOns)
+            {
+                yield return t.Intialize(Instance);
+            }
+            yield return null;
+
             yield return Instance.CurrentPipline.Intialize();
 
             OnComplete?.Invoke();
@@ -60,6 +67,27 @@ namespace SH.Ads
             if (_instance == null)
                 _instance = Resources.Load<AdSettings>(nameof(AdSettings));
         }
+#if UNITY_EDITOR
+        const string Location = "Assets/_Shoaib/Ads/Resources";
+        public static AdSettings Load()
+        {
+            var AdSetting = Resources.Load<AdSettings>(nameof(AdSettings));
+            if (AdSetting == null)
+            {
+                AdSetting = CreateInstance<AdSettings>();
+                if (!Directory.Exists(Location))
+                {
+                    Directory.CreateDirectory(Location);
+                }
+                string assetPath = $"{Location}/{nameof(AdSettings)}.asset";
+                UnityEditor.AssetDatabase.CreateAsset(AdSetting, assetPath);
+                UnityEditor.AssetDatabase.SaveAssets();
+                UnityEditor.Selection.activeObject = AdSetting;
+            }
+
+            return AdSetting;
+        }
+#endif
 
         [field: NonSerialized] public static bool RemoveAd { get => PlayerPrefs.GetInt("AdsRemove", 0) == 1; set => PlayerPrefs.GetInt("AdsRemove", value ? 1 : 0); }
         [field: NonSerialized] public static bool GDPRConcent { get => PlayerPrefs.GetInt("AdsNPAConcent", 0) == 1; set => PlayerPrefs.GetInt("AdsNPAConcent", value ?1 : 0);}

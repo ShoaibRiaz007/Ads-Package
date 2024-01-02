@@ -22,6 +22,7 @@ namespace SH.Ads
             new SelectPipline(),
             new ManageAdvertiser(),
             new InstallPackage(),
+            new AdOns(),
             new AboutMe(),
         };
 
@@ -112,45 +113,9 @@ namespace SH.Ads
         
         static void Init()
         {
-            // Create Ads setting instance
-            AdSetting = Resources.Load<AdSettings>(nameof(AdSettings));
-            if (AdSetting == null)
-            {
-                AdSetting = CreateInstance<AdSettings>();
-
-                string resourcesFolderPath = "Assets/_Shoaib/Ads/Resources";
-                if (!Directory.Exists(resourcesFolderPath))
-                {
-                    Directory.CreateDirectory(resourcesFolderPath);
-                }
-                string assetPath = $"Assets/_Shoaib/Ads/Resources/{nameof(AdSettings)}.asset";
-
-                AssetDatabase.CreateAsset(AdSetting, assetPath);
-                AssetDatabase.SaveAssets();
-                Selection.activeObject = AdSetting;
-            }
-
-            var waterfallPipeline = Resources.Load<Waterfall>(nameof(Waterfall));
-            if (waterfallPipeline == null)
-            {
-                waterfallPipeline = CreateInstance<Waterfall>();
-                string assetPath = $"Assets/_Shoaib/Ads/Resources/{nameof(Waterfall)}.asset";
-
-                AssetDatabase.CreateAsset(waterfallPipeline, assetPath);
-                AssetDatabase.SaveAssets();
-            }
-
-            var customWaterfallPipline = Resources.Load<CustomWaterfall>(nameof(CustomWaterfall));
-            if (customWaterfallPipline == null)
-            {
-                customWaterfallPipline = CreateInstance<CustomWaterfall>();
-                string assetPath = $"Assets/_Shoaib/Ads/Resources/{nameof(CustomWaterfall)}.asset";
-
-                AssetDatabase.CreateAsset(customWaterfallPipline, assetPath);
-                AssetDatabase.SaveAssets();
-            }
-
-
+            AdSetting = AdSettings.Load();
+            if (AdSetting.CurrentPipline == null)
+                AdSetting.CurrentPipline = Waterfall.Load();
             for (int i = 0; i < AdSetting.CurrentPipline.Advertisers.Count; i++)
             {
                 if (AdSetting.CurrentPipline.Advertisers[i].advertiser == SupportedAdvertisers.Admob)// Update AD ID in google admob settings
@@ -159,8 +124,7 @@ namespace SH.Ads
                     break;
                 }
             }
-            if(AdSetting.CurrentPipline == null)
-                AdSetting.CurrentPipline = waterfallPipeline;
+           
         }
 
         internal static void ShowPanel<T>() where T : IWindow

@@ -2,87 +2,31 @@
     "Advertisers": [
         {
             "advertiser": 0,
-            "ID": "This is test to check values",
+            "ID": "This is test ID",
             "IsAndroid": true,
             "IsIOS": false,
             "Ads": [
                 {
-                    "adType": 0,
-                    "adIds": [
-                        "",
-                        ""
+                    "type": 0,
+                    "ADIds": [
+                        "Test"
                     ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
+                    "LoadAtStart": true,
+                    "LoadAfterClose": false,
+                    "ADReshowTime": 0.0
                 },
                 {
-                    "adType": 1,
-                    "adIds": [
-                        ""
+                    "type": 2,
+                    "ADIds": [
+                        "test"
                     ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                },
-                {
-                    "adType": 2,
-                    "adIds": [
-                        ""
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                },
-                {
-                    "adType": 3,
-                    "adIds": [
-                        ""
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                },
-                {
-                    "adType": 5,
-                    "adIds": [
-                        ""
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
-                },
-                {
-                    "adType": 4,
-                    "adIds": [
-                        ""
-                    ],
-                    "loadAtStart": false,
-                    "loadAfterClose": false
+                    "LoadAtStart": true,
+                    "LoadAfterClose": true,
+                    "ADReshowTime": 0.0
                 }
             ],
             "order": 0
         }
     ],
-    "m_AdRules": [
-        {
-            "m_Advertiser": 0,
-            "m_AdType": 0
-        },
-        {
-            "m_Advertiser": 0,
-            "m_AdType": 1
-        },
-        {
-            "m_Advertiser": 0,
-            "m_AdType": 2
-        },
-        {
-            "m_Advertiser": 0,
-            "m_AdType": 3
-        },
-        {
-            "m_Advertiser": 0,
-            "m_AdType": 4
-        },
-        {
-            "m_Advertiser": 0,
-            "m_AdType": 5
-        }
-    ]
+    "m_AdRules": []
 }

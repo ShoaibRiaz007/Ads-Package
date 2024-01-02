@@ -19,9 +19,9 @@ namespace SH.Ads.Editor
         {
             adSettings= settings;
             if (waterPipeline == null)
-                waterPipeline = Resources.Load<Waterfall>(nameof(Waterfall));
+                waterPipeline = Waterfall.Load();
             if (CustomWaterfallPipeline == null)
-                CustomWaterfallPipeline = Resources.Load<CustomWaterfall>(nameof(CustomWaterfall));
+                CustomWaterfallPipeline = CustomWaterfall.Load();
 
             EditorUtility.SetDirty(settings);
         }

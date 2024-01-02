@@ -3,6 +3,7 @@ using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
 using System;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 namespace SH.Ads.Admob
@@ -62,6 +63,7 @@ namespace SH.Ads.Admob
                     IsAdShowing = true;
                     LastAdShownTime = DateTime.Now;
                     rewardedAd.Show(HandleUserEarnedReward);
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Show",count.ToString());
                 }));
             }
             else
@@ -81,6 +83,7 @@ namespace SH.Ads.Admob
 
             if (error != null)
             {
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", error.GetCause().GetMessage());
                 Debug.Log($"Ad log : {this} Failed :  {count} cause : {error.GetCause()}");
                 if (count + 1 <  IDs.Count)
                 {
@@ -104,12 +107,15 @@ namespace SH.Ads.Admob
                 };
                 rewardedAd.OnAdImpressionRecorded += () =>
                 {
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Impression",count.ToString());
                     Debug.Log("Ad log : rewardedAd impression Recorded :  " + count);
                 };
                 rewardedAd.OnAdPaid += (v) =>
                 {
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Paid", v.Value.ToString());
                     Debug.Log("Ad log : rewardedAd paid :  " + v.Value);
                 };
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
             }
         }
 

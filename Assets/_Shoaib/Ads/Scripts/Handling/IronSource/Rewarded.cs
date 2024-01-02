@@ -25,6 +25,7 @@ namespace SH.Ads.IronSource
                 IsAdShowing = false;
                 if (loadAfterClose)
                     Load();
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
             };
 
             IronSourceRewardedVideoEvents.onAdReadyEvent += (ad) =>
@@ -48,6 +49,7 @@ namespace SH.Ads.IronSource
             IronSourceRewardedVideoEvents.onAdLoadFailedEvent += (ad) =>
             {
                 Debug.Log($"Ad log : {this} ad is closed with error : [{ad.getErrorCode()}] at index: {count}");
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", ad.getCode().ToString());
                 adLoading = false;
                 if (count + 1 < IDs.Count)
                 {

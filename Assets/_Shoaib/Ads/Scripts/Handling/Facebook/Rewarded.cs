@@ -31,11 +31,12 @@ namespace SH.Ads.Facebook
                 adInstance = new RewardedVideoAd(IDs[count]);
                 adInstance.Register(new GameObject("Handler Facebook Rewarded"));
 
-                adInstance.RewardedVideoAdDidLoad += () => { adLoading = false; };
+                adInstance.RewardedVideoAdDidLoad += () => { adLoading = false; AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString()); };
                 adInstance.RewardedVideoAdDidFailWithError += (error) =>
                 {
                     adLoading = false;
                     Debug.Log($"Ad log : {this} Failed :  {count} cause : {error}");
+                    AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", error);
                     if (count + 1 < IDs.Count)
                     {
                         count++;

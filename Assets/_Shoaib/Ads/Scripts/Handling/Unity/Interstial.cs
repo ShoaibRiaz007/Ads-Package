@@ -59,11 +59,13 @@ namespace SH.Ads.Unity
            adLoaded = true;
            adLoading = false;
             Debug.Log($"Ad log : {this} ad loaded :  {count}" + adLoaded);
+            AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
         }
 
         public void OnUnityAdsFailedToLoad(string placementId, UnityAdsLoadError error, string message)
         {
             Debug.Log($"Ad log : {this} Failed :  {count} cause : {message}");
+            AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail",message);
             adLoading = false;
             if (count + 1 < IDs.Count)
             {

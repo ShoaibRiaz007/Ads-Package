@@ -43,6 +43,7 @@ namespace SH.Ads.AppLovin
         private void OnAdFailedEvent(string arg1, MaxSdkBase.ErrorInfo info)
         {
             Debug.Log($"Ad log : {this} Failed :  " + count);
+            AdsManager.LogAnalyticEvent(this.ToString(), "On_Fail", info.AdLoadFailureInfo);
             if (count + 1 < IDs.Count)
             {
                 count++;
@@ -57,6 +58,7 @@ namespace SH.Ads.AppLovin
         private void OnAdLoadedEvent(string arg1, MaxSdkBase.AdInfo info)
         {
             adLoading = false;
+            AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
         }
 
         protected override void Load()

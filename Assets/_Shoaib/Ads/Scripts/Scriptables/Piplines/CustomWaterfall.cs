@@ -1,6 +1,5 @@
 using SH.Ads.Base;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using UnityEngine;
 
@@ -17,8 +16,10 @@ namespace SH.Ads.Piplines
 
         [HideInInspector] public List<CustomAdvertiser> m_AdRules =new List<CustomAdvertiser>();
 
+
+#if UNITY_EDITOR
         public override string Name => "Custom Waterfall Pipline";
-        public override string Description => 
+        public override string Description =>
             "The Custom Waterfall Pipeline allows you to specify which type of ad each advertiser will display. " +
             "\n\nFor instance, you can configure it to show AdMob's banner and rectangular banner ads, while using Unity or IronSource for interstitial ads. " +
             "\nTo implement this, follow these steps: " +
@@ -27,9 +28,29 @@ namespace SH.Ads.Piplines
             "\n\nHowever, when an interstitial ad is requested, the pipeline will attempt Unity first, and if Unity's interstitial is not available, it will fall back to IronSource. " +
             "\nThis approach allows you to utilize multiple advertising platforms without concerns about ad limitations from a single advertiser, even when making multiple requests for each ad type.";
 
+        const string Location = "Assets/_Shoaib/Ads/Data/CustomWaterfall.asset";
 
+        public static CustomWaterfall Load()
+        {
+            var customWaterfallPipline = UnityEditor.AssetDatabase.LoadAssetAtPath<CustomWaterfall>(Location);
+            if (customWaterfallPipline == null)
+            {
+                customWaterfallPipline = CreateInstance<CustomWaterfall>();
+                UnityEditor.AssetDatabase.CreateAsset(customWaterfallPipline, Location);
+                UnityEditor.AssetDatabase.SaveAssets();
+            }
+            return customWaterfallPipline;
+        } 
+#endif
         public override void ShowAd(AdType adType)
         {
+            if (m_AdRules.Count == 0)
+            {
+                base.ShowAd(adType);
+                return;
+            }
+
+
             int shownAdvertiserIndex = ShowRuleAd(adType);
 
             if (shownAdvertiserIndex != -1)
