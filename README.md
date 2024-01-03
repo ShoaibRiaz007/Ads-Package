@@ -39,13 +39,14 @@ There are multiple solutions available for ads integration in any project, but t
 - [x] [AdColony](#)
 - [x] [Facebook [Meta]](#)
 - [x] [Ironsource](#)
+- [X] [AppLovin](#)
 - [x] [Piplines](#)
     - [x] Waterfall pipeline
     - [x] Custom Waterfall pipeline
 - [ ] [Firebase Integration (Currently Working)](#)
-    - [ ] Remote Config
+    - [X] Remote Config
+    - [X] Firebase Analytics 
     - [ ] Database (For daily limiting ads for each advertiser and ad type for new accounts to avoid Ads limit)
-- [ ] [AppLovin](#)
 - [ ] [Chartboost](#)
 - [ ] [Heyzap](#)
 - [ ] [Vungle](#)
