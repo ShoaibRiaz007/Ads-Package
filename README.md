@@ -45,6 +45,7 @@ There are multiple solutions available for ads integration in any project, but t
     - [x] Custom Waterfall pipeline
 - [ ] [Firebase Integration (Currently Working)](#)
     - [X] Remote Config
+    - [X] Firebase Analytics 
     - [ ] Database (For daily limiting ads for each advertiser and ad type for new accounts to avoid Ads limit)
 - [ ] [Chartboost](#)
 - [ ] [Heyzap](#)
