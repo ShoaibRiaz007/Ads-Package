@@ -3,7 +3,6 @@ using GoogleMobileAds.Api;
 using GoogleMobileAds.Ump.Api;
 using SH.Ads.Base;
 using System;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.UI;
 
