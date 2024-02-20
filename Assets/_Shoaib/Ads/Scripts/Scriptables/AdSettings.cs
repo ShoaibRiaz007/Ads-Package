@@ -52,7 +52,46 @@ namespace SH.Ads
 
             OnComplete?.Invoke();
         }
+        internal static void LogAnalyticEvent(string eventName, string parameterName, string parameterValue)
+        {
+#if FirebaseAnalytics
+            foreach(var t in Instance.m_AdOns)
+            {
+                if(t.GetType() == typeof(Adons.FirebaseAnalytics))
+                {
+                    Adons.FirebaseAnalytics FA = t as Adons.FirebaseAnalytics ;
+                    FA.LogEvent(eventName,parameterName,parameterValue);
+                }
+            }
+#endif
+        }
+        internal static void LogAnalyticEvent(string eventName)
+        {
+#if FirebaseAnalytics
+            foreach (var t in Instance.m_AdOns)
+            {
+                if (t.GetType() == typeof(Adons.FirebaseAnalytics))
+                {
+                    Adons.FirebaseAnalytics FA = t as Adons.FirebaseAnalytics;
+                    FA.LogEvent(eventName);
+                }
+            }
+#endif
+        }
 
+#if FirebaseAnalytics
+        internal static void LogAnalyticEvent(string eventName,params Firebase.Analytics.Parameter[] parameters)
+        {
+            foreach (var t in Instance.m_AdOns)
+            {
+                if (t.GetType() == typeof(Adons.FirebaseAnalytics))
+                {
+                    Adons.FirebaseAnalytics FA = t as Adons.FirebaseAnalytics;
+                    FA.LogEvent(eventName, parameters);
+                }
+            }
+        }
+#endif
         internal static void AdCalling(AdType adType) => Instance.CurrentPipline.ShowAd(adType);
 
 

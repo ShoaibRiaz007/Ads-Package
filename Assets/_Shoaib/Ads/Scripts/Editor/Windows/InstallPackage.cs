@@ -1,6 +1,5 @@
 #if UNITY_EDITOR
-using DG.Tweening.Plugins.Core.PathCore;
-using SH.Ads.Base;
+using SH.Ads.Editor.Adons;
 using SH.Ads.Editor.Base;
 using System;
 using System.Collections.Generic;
@@ -18,28 +17,52 @@ namespace SH.Ads.Editor
         const string DependenceisPath = "Assets/_Shoaib/Ads/Dependencies";
         const string DependenceisAdonsPath = "Assets/_Shoaib/Ads/Dependencies/Adons";
         const string UnityAd = "com.unity.ads";
-        static bool ImportingInProgress = false, InstallingUnityPackage = false;
-        static List<string> AdvertiserPackages = new List<string>(), AdonsPackages = new List<string>();
-        static ListRequest InstalledPackages;
-        AddRequest installingPackage;
+
+        List<string> DependencieAdvertiserPackages = new List<string>(), DependenciesAdOnPackages = new List<string>();
+
+        public Adon[] allAdons = new Adon[]
+        {
+             new FirebaseAnalytics(),
+             new RemoteConfig()
+        };
+
+        ListRequest PackageManagerInstallRequestList;
+        AddRequest PackageManagerInstallRequest;
+        
+        
         static Vector2 scrollPos;
+        InstalledPackages installedPackagesFiles = null;
+
         public override string Name => "Package Installer";
 
         public override string ToolTip => "Panel to intall new advertiser";
+
+        public InstallPackage()
+        {
+            AssetDatabase.importPackageCompleted += ImportPackageCompleted;
+            AssetDatabase.importPackageCancelled += ImportPackageCanceled;
+            AssetDatabase.importPackageStarted += ImportPackageStarted;
+            AssetDatabase.importPackageFailed += ImportPackageFailed;
+            AssetDatabase.onImportPackageItemsCompleted += ImportedItems;
+        }
 
         public override void OnEnable(AdSettings settings)
         {
             Extensions.CheckForInstalledPackages();
             ListFilesInFolder();
-            ImportingInProgress = false;
             EditorUtility.SetDirty(settings);
+            for (int i = 0; i < allAdons.Length; i++)
+            {
+                allAdons[i].CheckIfInstalled();
+            }
+            installedPackagesFiles =InstalledPackages.Load();
         }
 
         public override void OnGUI()
         {
             Header();
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos, new GUIStyle(EditorStyles.helpBox));
-            if (!ImportingInProgress)
+            if (string.IsNullOrEmpty(installedPackagesFiles.ActivePackage))
             {
                 EditorGUILayout.LabelField("Packages : ", new GUIStyle(EditorStyles.boldLabel) { fontSize = 30, fixedHeight = 30 });
                 EditorGUILayout.Space(30);
@@ -50,9 +73,9 @@ namespace SH.Ads.Editor
                 EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 EditorGUILayout.LabelField("Ad Ons : ", new GUIStyle(EditorStyles.boldLabel) { fontSize=40, fixedHeight=50});
                 EditorGUILayout.Space(30);
-                for (int i = 0; i < AdonsPackages.Count; i++)
+                for (int i = 0; i < allAdons.Length; i++)
                 {
-                    ShowOption(AdonsPackages[i].Split('\\')[1], AdonsPackages[i], false);
+                    ShowOption(allAdons[i]);
                 }
 
                 EditorGUILayout.EndVertical();
@@ -63,17 +86,17 @@ namespace SH.Ads.Editor
             EditorGUILayout.EndScrollView();
         }
 
-        static void ListFilesInFolder()
+        void ListFilesInFolder()
         {
-            if (Directory.Exists(DependenceisPath))
+            if (Directory.Exists(DependenceisPath) && Directory.Exists(DependenceisAdonsPath))
             {
-                AdvertiserPackages = new List<string>();
-                AdvertiserPackages.AddRange(Directory.GetFiles(DependenceisPath));
-                AdvertiserPackages = AdvertiserPackages.Where(a => !a.Contains(".meta")).ToList();
+                DependencieAdvertiserPackages = new List<string>();
+                DependencieAdvertiserPackages.AddRange(Directory.GetFiles(DependenceisPath));
+                DependencieAdvertiserPackages = DependencieAdvertiserPackages.Where(a => !a.Contains(".meta")).ToList();
 
-                AdonsPackages = new List<string>();
-                AdonsPackages.AddRange(Directory.GetFiles(DependenceisAdonsPath));
-                AdonsPackages = AdonsPackages.Where(a => !a.Contains(".meta")).ToList();
+                DependenciesAdOnPackages = new List<string>();
+                DependenciesAdOnPackages.AddRange(Directory.GetFiles(DependenceisAdonsPath));
+                DependenciesAdOnPackages = DependenciesAdOnPackages.Where(a => !a.Contains(".meta")).ToList();
             }
             else
                 EditorUtility.DisplayDialog("Error", $"Dictionary  [{DependenceisPath}] or [{DependenceisAdonsPath}] not found. Please create folder and place dependent packages in it.", "OK");
@@ -92,29 +115,29 @@ namespace SH.Ads.Editor
             switch (advertiser)
             {
                 case SupportedAdvertisers.Admob:
-                    foreach (var path in AdvertiserPackages)
+                    foreach (var path in DependencieAdvertiserPackages)
                         if (path.Contains("GoogleMobileAds"))
-                            ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
+                            ShowOption(path.Split(Path.DirectorySeparatorChar)[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.AdColony:
-                    foreach (var path in AdvertiserPackages)
+                    foreach (var path in DependencieAdvertiserPackages)
                         if (path.Contains("AdColony"))
-                            ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
+                            ShowOption(path.Split(Path.DirectorySeparatorChar)[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.Facebook:
-                    foreach (var path in AdvertiserPackages)
+                    foreach (var path in DependencieAdvertiserPackages)
                         if (path.Contains("audience"))
-                            ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
+                            ShowOption(path.Split(Path.DirectorySeparatorChar)[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.IronSource:
-                    foreach (var path in AdvertiserPackages)
+                    foreach (var path in DependencieAdvertiserPackages)
                         if (path.Contains("IronSource"))
-                            ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
+                            ShowOption(path.Split(Path.DirectorySeparatorChar)[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.AppLovin:
-                    foreach (var path in AdvertiserPackages)
+                    foreach (var path in DependencieAdvertiserPackages)
                         if (path.Contains("AppLovin"))
-                            ShowOption(path.Split('\\')[1], path, advertiser.IsInstalled());
+                            ShowOption(path.Split(Path.DirectorySeparatorChar)[1], path, advertiser.IsInstalled());
                     return;
                 case SupportedAdvertisers.Unity:
                     InstalledUnityPackage(UnityAd);
@@ -130,25 +153,67 @@ namespace SH.Ads.Editor
 
             if (GUILayout.Button(isInstalled ? new GUIContent("Re Install", $"Reinstall {name}") : new GUIContent("Install", $"Install {name}"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
             {
-                AssetDatabase.importPackageCompleted += ImportPackageCompleted;
-                AssetDatabase.importPackageCancelled += ImportPackageCanceled;
-                AssetDatabase.importPackageStarted += ImportPackageStarted;
-                AssetDatabase.importPackageFailed += ImportPackageFailed;
-                AssetDatabase.onImportPackageItemsCompleted += ImportedItems;
                 AssetDatabase.ImportPackage(path, true);
+                installedPackagesFiles.ActivePackage = name;
+            }
+
+            if (installedPackagesFiles.HasPackage(name) && GUILayout.Button(new GUIContent("Delete", $"Delete all files from package {name}"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
+            {
+                if(EditorUtility.DisplayDialog("Delete package files", $"Are you sure you want to delete [{name}] package files. \n PLEASE NOTE THIS ACTION CAN NOT BE UNDO", "Delete", "Cancel"))
+                {
+                    installedPackagesFiles.RemoveInstalled(name);
+                }
             }
 
             EditorGUILayout.EndHorizontal();
         }
 
-        private void ImportedItems(string[] obj)
+        void ShowOption(Adon adon)
         {
-            Debug.Log("Files Imported :"+obj.Length);
+            EditorGUILayout.BeginHorizontal(new GUIStyle(EditorStyles.helpBox));
+
+
+            EditorGUILayout.LabelField(adon.Name);
+
+            if (GUILayout.Button(adon.IsInstalled ? new GUIContent("Re Install", $"Reinstall {adon.Name}") : new GUIContent("Install", $"Install {adon.Name}"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
+            {
+                bool found = false;
+
+                foreach (var path in DependenciesAdOnPackages)
+                {
+                    if (path.Contains(adon.Symbol))
+                    {
+                        AssetDatabase.ImportPackage(path, true);
+                        installedPackagesFiles.ActivePackage = adon.Name;
+                        found=true;
+                        break;  
+                    }
+                       
+                }
+                if (!found)
+                    EditorUtility.DisplayDialog("Error Package not found", $"In Dictionary  [{DependenceisAdonsPath}] package [{adon.Symbol}] not found. Please create folder and place dependent packages in it.", "OK");
+
+            }
+
+            if (installedPackagesFiles.HasPackage(adon.Name) && GUILayout.Button(new GUIContent("Delete", $"Delete all files from package {adon.Name}"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
+            {
+                if (EditorUtility.DisplayDialog("Delete package files", $"Are you sure you want to delete [{adon.Name}] package files. \n PLEASE NOTE THIS ACTION CAN NOT BE UNDO", "Delete", "Cancel"))
+                {
+                    installedPackagesFiles.RemoveInstalled(adon.Name);
+                    adon.RemoveSymbol();
+                    for (int i = 0; i < allAdons.Length; i++)
+                    {
+                        allAdons[i].CheckIfInstalled();
+                    }
+                }
+            }
+
+            EditorGUILayout.EndHorizontal();
         }
 
         void ShowOption(bool isInstalled)
         {
-            if (InstallingUnityPackage)
+            if (string.IsNullOrEmpty(installedPackagesFiles.ActivePackage))
             {
                 AddingUnityPackage();
                 return;
@@ -159,24 +224,25 @@ namespace SH.Ads.Editor
 
             if (GUILayout.Button(isInstalled ? new GUIContent("Re Install", $"Reinstall ") : new GUIContent("Install", $"Install "), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
             {
-                installingPackage = Client.Add(UnityAd);
-                InstallingUnityPackage = true;
+                PackageManagerInstallRequest = Client.Add(UnityAd);
+                installedPackagesFiles.ActivePackage = "com.unity.ads";
             }
+
             EditorGUILayout.EndHorizontal();
         }
         void InstalledUnityPackage(string name)
         {
-            if (InstalledPackages == null)
-                InstalledPackages = Client.List();
+            if (PackageManagerInstallRequestList == null)
+                PackageManagerInstallRequestList = Client.List();
 
-            if (!InstalledPackages.IsCompleted)
+            if (!PackageManagerInstallRequestList.IsCompleted)
             {
                 EditorGUILayout.HelpBox($"Checking for Updates of [{UnityAd}]", MessageType.Warning);
                 return;
             }
-            if (InstalledPackages.Status == StatusCode.Success)
+            if (PackageManagerInstallRequestList.Status == StatusCode.Success)
             {
-                var packageInfo = InstalledPackages.Result.FirstOrDefault(p => p.name == name);
+                var packageInfo = PackageManagerInstallRequestList.Result.FirstOrDefault(p => p.name == name);
                 if (packageInfo != null)
                 {
                     string installedVersion = packageInfo.versions.latest;
@@ -188,55 +254,54 @@ namespace SH.Ads.Editor
 
         private void AddingUnityPackage()
         {
-            if (installingPackage == null)
+            if (PackageManagerInstallRequest == null)
                 return;
 
-            if (!installingPackage.IsCompleted)
+            if (!PackageManagerInstallRequest.IsCompleted)
             {
                 EditorGUILayout.HelpBox($"Installing unity [{UnityAd}] package.", MessageType.Warning);
                 return;
             }
 
-            if (installingPackage.Status == StatusCode.Success)
+            if (PackageManagerInstallRequest.Status == StatusCode.Success)
             {
                 EditorUtility.DisplayDialog("Package successfully installed", $"Package  [{UnityAd}] imported successfully", "OK");
-                installingPackage = null;
-                InstallingUnityPackage = false;
+                PackageManagerInstallRequest = null;
+                installedPackagesFiles.ActivePackage = string.Empty;
                 Extensions.CheckForInstalledPackages();
             }
         }
 
+
+        private void ImportedItems(string[] obj)
+        {
+            if (string.IsNullOrEmpty(installedPackagesFiles.ActivePackage))
+            {
+                Debug.LogError("Is null herer");
+                return;
+            }
+            Debug.Log("Files Imported :" + obj.Length);
+
+            installedPackagesFiles.AddInstalled(installedPackagesFiles.ActivePackage, obj);
+        }
         private void ImportPackageCompleted(string packageName)
         {
-            ImportingInProgress = false;
             EditorUtility.DisplayDialog("Package successfully Imported", $"Package  [{packageName}] imported successfully", "OK");
-            AssetDatabase.importPackageCompleted -= ImportPackageCompleted;
-            AssetDatabase.importPackageCancelled -= ImportPackageCanceled;
-            AssetDatabase.importPackageStarted -= ImportPackageStarted;
-            AssetDatabase.importPackageFailed -= ImportPackageFailed;
-        }
-        private void ImportPackageCanceled(string packageName)
-        {
-            ImportingInProgress = false;
-            EditorUtility.DisplayDialog("Importing package Canceled", $"Importing package [{packageName}] is cancelled by user", "OK");
-            AssetDatabase.importPackageCompleted -= ImportPackageCompleted;
-            AssetDatabase.importPackageCancelled -= ImportPackageCanceled;
-            AssetDatabase.importPackageStarted -= ImportPackageStarted;
-            AssetDatabase.importPackageFailed -= ImportPackageFailed;
         }
         private void ImportPackageStarted(string packageName)
         {
-            ImportingInProgress = true;
+            
         }
         private void ImportPackageFailed(string packageName, string errorMessage)
         {
-            ImportingInProgress = false;
             EditorUtility.DisplayDialog("Importing package failled", $"Importing package [{packageName}] failled with error [{errorMessage}]", "OK");
-            AssetDatabase.importPackageCompleted -= ImportPackageCompleted;
-            AssetDatabase.importPackageCancelled -= ImportPackageCanceled;
-            AssetDatabase.importPackageStarted -= ImportPackageStarted;
-            AssetDatabase.importPackageFailed -= ImportPackageFailed;
+            installedPackagesFiles.ActivePackage = string.Empty;
 
+        }
+        private void ImportPackageCanceled(string packageName)
+        {
+            EditorUtility.DisplayDialog("Importing package Canceled", $"Importing package [{packageName}] is cancelled by user", "OK");
+            installedPackagesFiles.ActivePackage = string.Empty;
         }
     }
 }

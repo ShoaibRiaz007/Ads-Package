@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using SH.Ads.Piplines;
 
 namespace SH.Ads.Adons
 {
@@ -30,30 +29,23 @@ namespace SH.Ads.Adons
 
         internal override IEnumerator Intialize(AdSettings setting)
         {
-            bool initalized = false;
-            Dictionary<string, object> defaults = new Dictionary<string, object>();
-            defaults.Add(AD_SETTINGS, "{}");
+            if(FirebaseRemoteConfig.DefaultInstance==null)
+                yield return Firebase.FirebaseApp.CheckAndFixDependenciesAsync();
+            Dictionary<string, object> defaults = new Dictionary<string, object>
+            {
+                { AD_SETTINGS, "{}" }
+            };
 
-            var remoteConfig = FirebaseRemoteConfig.DefaultInstance;
-            remoteConfig.SetDefaultsAsync(defaults)
-              .ContinueWith(result => remoteConfig.FetchAndActivateAsync())
-              .Unwrap()
-              .ContinueWithOnMainThread(task => {
-                  Debug.Log("Ad Status : Remote Config is intialized");
-                  initalized = true;
-
-                  var json = FirebaseRemoteConfig.DefaultInstance.GetValue(AD_SETTINGS).StringValue;
-                  if (json == "{}")// check if json is null
-                  {
-                      Debug.Log("Ad Status : Remote config loaded but is empty,so Ignoring it");
-                      return;
-                  }
-                  JsonUtility.FromJsonOverwrite(json, setting.CurrentPipline);
-              });
-
-            while (!initalized)
-                yield return null;
-
+            yield return FirebaseRemoteConfig.DefaultInstance.SetDefaultsAsync(defaults)
+              .ContinueWith(result => FirebaseRemoteConfig.DefaultInstance.FetchAndActivateAsync())
+              .Unwrap();
+            var json = FirebaseRemoteConfig.DefaultInstance.GetValue(AD_SETTINGS).StringValue;
+            if (json == "{}")// check if json is null
+            {
+                Debug.Log("Ad Status : Remote config loaded but is empty,so Ignoring it");
+                yield break;
+            }
+            JsonUtility.FromJsonOverwrite(json, setting.CurrentPipline);
             yield return null;// now load advertisers after one frame
         }
     }

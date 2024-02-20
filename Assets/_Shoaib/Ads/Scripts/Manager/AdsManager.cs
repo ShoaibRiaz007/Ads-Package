@@ -1,4 +1,3 @@
-using SH.Ads.Base;
 using System;
 using System.Collections;
 using UnityEngine;
@@ -45,8 +44,6 @@ namespace SH.Ads
                 {
                    AdSettings.AdCalling(AdType.OpenAd);
                 }
-
-
             }
 
             private void OnApplicationPause(bool pause)
@@ -69,12 +66,28 @@ namespace SH.Ads
         /// <param name="ParameterValue">Parameter Value Like [1] or ["Completed"]</param>
         public static void LogAnalyticEvent(string EventName,string ParameterName, string ParameterValue)
         {
-#if FirebaseAnalytics
-            Firebase.Analytics.FirebaseAnalytics.LogEvent(EventName, ParameterName, ParameterValue);
-#else
-            Debug.Log("Ad log : Firebase analytics is not enbaled");
-#endif
+            AdSettings.LogAnalyticEvent(EventName, ParameterName, ParameterValue);
         }
+
+        /// <summary>
+        /// Log an Event on firebase analystics
+        /// </summary>
+        /// <param name="EventName">Event Name like [Level_Complete_]</param>
+        public static void LogAnalyticEvent(string EventName)
+        {
+            AdSettings.LogAnalyticEvent(EventName);
+        }
+
+#if FirebaseAnalytics
+        /// <summary>
+        /// Log an Event on firebase analystics
+        /// </summary>
+        /// <param name="EventName">Event Name like [Level_Complete_]</param>
+        public static void LogAnalyticEvent(string EventName,params Firebase.Analytics.Parameter[] parameters)
+        {
+            AdSettings.LogAnalyticEvent(EventName);
+        }
+#endif
 
         /// <summary>
         /// Intialize All Advertisers

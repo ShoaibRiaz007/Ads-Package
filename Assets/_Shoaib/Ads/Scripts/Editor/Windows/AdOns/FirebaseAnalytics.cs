@@ -18,7 +18,7 @@ namespace SH.Ads.Editor.Adons
 
         public override bool SymbolPresent => symbol;
 
-        protected override string Symbol => "FirebaseAnalytics";
+        public override string Symbol => "FirebaseAnalytics";
 
         public FirebaseAnalytics()// Default constructor
         {
@@ -79,7 +79,7 @@ namespace SH.Ads.Editor.Adons
 
         void OnAfterAssemblyReload()
         {
-#if RemoteConfig
+#if FirebaseAnalytics
             Type type = Type.GetType(typeName, false, true);
 
             if (type != null)

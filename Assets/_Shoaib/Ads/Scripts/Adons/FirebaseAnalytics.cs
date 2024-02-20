@@ -2,6 +2,7 @@
 using Firebase;
 using Firebase.Analytics;
 using Firebase.Extensions;
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -43,6 +44,21 @@ namespace SH.Ads.Adons
             });
             while (!initalized)
                 yield return null;
+        }
+
+        internal void LogEvent(string eventName, string parameterName, string parameterValue)
+        {
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(eventName, parameterName, parameterValue);
+        }
+
+        internal void LogEvent(string name)
+        {
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(name);
+        }
+
+        internal void LogEvent(string name, params Parameter[] parameters)
+        {
+            Firebase.Analytics.FirebaseAnalytics.LogEvent(name, parameters);
         }
     }
 }

@@ -1,6 +1,4 @@
 #if UNITY_EDITOR
-using DG.Tweening.Core.Easing;
-using SH.Ads.Base;
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -20,7 +18,7 @@ namespace SH.Ads.Editor.Adons
 
         public override bool SymbolPresent => symbol;
 
-        protected override string Symbol => "RemoteConfig";
+        public override string Symbol => "RemoteConfig";
 
         public RemoteConfig()// Default constructor
         {
