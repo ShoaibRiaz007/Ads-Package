@@ -12,6 +12,7 @@ namespace SH.Ads
     public static class AdsManager
     {
         internal static Action<string, float> OnUserEarnedReward;
+        internal static Action OnRewardClosed;
 
         static AdsManager()
         {
@@ -155,6 +156,18 @@ namespace SH.Ads
             OnUserEarnedReward = OnAdReward;
             AdSettings.AdCalling(AdType.Rewarded);
         }
+
+        /// <summary>
+        /// Show Rewarded video ad
+        /// </summary>
+        /// <param name="OnAdReward">Will call when user completes rewarded ad</param>
+        /// <param name="OnAdClosed">Will call when ad is closed</param>
+        public static void ShowRewarded(Action<string, float> OnAdReward, Action OnAdClosed)
+        {
+            OnUserEarnedReward = OnAdReward;
+            OnRewardClosed = OnAdClosed;
+            AdSettings.AdCalling(AdType.Rewarded);
+        }
         /// <summary>
         /// Show Rewarded Interstial Ad
         /// </summary>
@@ -162,6 +175,17 @@ namespace SH.Ads
         public static void ShowRewardedInterstitial(Action<string, float> OnAdReward)
         {
             OnUserEarnedReward = OnAdReward;
+            AdSettings.AdCalling(AdType.RewardedInterstial);
+        }
+        /// <summary>
+        /// Show Rewarded Interstial Ad
+        /// </summary>
+        /// <param name="OnAdReward">Will call when user completes rewarded ad</param>
+        /// <param name="OnAdClosed">Will call when ad is closed</param>
+        public static void ShowRewardedInterstitial(Action<string, float> OnAdReward, Action OnAdClosed)
+        {
+            OnUserEarnedReward = OnAdReward;
+            OnRewardClosed = OnAdClosed;
             AdSettings.AdCalling(AdType.RewardedInterstial);
         }
         /// <summary>

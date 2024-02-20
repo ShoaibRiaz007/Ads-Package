@@ -93,6 +93,7 @@ namespace SH.Ads
         }
 #endif
         internal static void AdCalling(AdType adType) => Instance.CurrentPipline.ShowAd(adType);
+        internal static void RemoveVisibleAd(AdType adType) => Instance.CurrentPipline.ShowAd(adType);
 
 
         private void OnValidate()
@@ -128,7 +129,7 @@ namespace SH.Ads
         }
 #endif
 
-        [field: NonSerialized] public static bool RemoveAd { get => PlayerPrefs.GetInt("AdsRemove", 0) == 1; set => PlayerPrefs.GetInt("AdsRemove", value ? 1 : 0); }
+        [field: NonSerialized] public static bool RemoveAd { get => PlayerPrefs.GetInt("AdsRemove", 0) == 1; set { if (value) { RemoveVisibleAd(AdType.Banner); RemoveVisibleAd(AdType.BigBanner); } PlayerPrefs.GetInt("AdsRemove", value ? 1 : 0); } }
         [field: NonSerialized] public static bool GDPRConcent { get => PlayerPrefs.GetInt("AdsNPAConcent", 0) == 1; set => PlayerPrefs.GetInt("AdsNPAConcent", value ?1 : 0);}
         [field: NonSerialized] public static bool CCPAConsent { get => PlayerPrefs.GetInt("AdsCCPAConsent", 0) == 1; set => PlayerPrefs.GetInt("AdsCCPAConsent", value ? 1 : 0); }
                 

@@ -108,8 +108,12 @@ namespace SH.Ads.AdColony
             adLoading = false;
             IsAdShowing = false;
             adView = null;
+           
             if (loadAfterClose)
                 Load();
+
+            AdsManager.OnRewardClosed?.Invoke();
+            AdsManager.OnRewardClosed = null;
         }
 
         private void OnUserReward(string zoneId, bool success, string name, int amount)

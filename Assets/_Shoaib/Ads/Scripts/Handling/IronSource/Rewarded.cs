@@ -25,13 +25,16 @@ namespace SH.Ads.IronSource
                 IsAdShowing = false;
                 if (loadAfterClose)
                     Load();
-                AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
+                AdsManager.OnRewardClosed?.Invoke();
+                AdsManager.OnRewardClosed = null;
+               
             };
 
             IronSourceRewardedVideoEvents.onAdReadyEvent += (ad) =>
             {
                 Debug.Log($"Ad log : {this} ad is loaded : {count}");
                 adLoading = false;
+                AdsManager.LogAnalyticEvent(this.ToString(), "On_Load", count.ToString());
             };
 
             IronSourceRewardedVideoEvents.onAdRewardedEvent += (placment,reward) =>

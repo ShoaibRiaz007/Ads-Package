@@ -29,6 +29,8 @@ namespace SH.Ads.AppLovin
         private void OnAdCloseEvent(string arg1, MaxSdkBase.AdInfo info)
         {
             IsAdShowing = false;
+            AdsManager.OnRewardClosed?.Invoke();
+            AdsManager.OnRewardClosed = null;
         }
 
         private void OnAdRevenuePaidEvent(string arg1, MaxSdkBase.AdInfo info)

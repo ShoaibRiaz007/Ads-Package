@@ -53,6 +53,8 @@ namespace SH.Ads.Facebook
                     IsAdShowing = false;
                     if (loadAfterClose)
                         Load();
+                    AdsManager.OnRewardClosed?.Invoke();
+                    AdsManager.OnRewardClosed = null;
                 };
                 adInstance.rewardedVideoAdComplete += () =>
                 {

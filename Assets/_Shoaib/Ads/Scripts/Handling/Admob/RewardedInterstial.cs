@@ -90,6 +90,8 @@ namespace SH.Ads.Admob
                     IsAdShowing = false;
                     if (loadAfterClose)
                         Load();
+                    AdsManager.OnRewardClosed?.Invoke();
+                    AdsManager.OnRewardClosed = null;
                 };
                 interStialReward.OnAdImpressionRecorded += () =>
                 {

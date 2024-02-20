@@ -36,6 +36,14 @@ namespace SH.Ads.Base
                 BaseAdHandler.AdNotAvailble();
         }
 
+        public void RemoveAd(AdType adType)
+        {
+            foreach (var t in Advertisers)
+            {
+                t.RemoveAd(adType);
+            }
+        }
+
         public void CopyValues(IPipeline copyfrom)
         {
             Advertisers= copyfrom.Advertisers;

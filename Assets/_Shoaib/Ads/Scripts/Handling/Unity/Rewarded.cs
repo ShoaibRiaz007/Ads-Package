@@ -99,7 +99,9 @@ namespace SH.Ads.Unity
             {
                 AdsManager.OnUserEarnedReward?.Invoke("Reward", AdSettings.RewardAmount);
                 AdsManager.OnUserEarnedReward = null;
-            }       
+            }
+            AdsManager.OnRewardClosed?.Invoke();
+            AdsManager.OnRewardClosed = null;
         }
     }
 }
