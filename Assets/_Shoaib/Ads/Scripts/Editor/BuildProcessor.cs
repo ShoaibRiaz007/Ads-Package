@@ -1,12 +1,15 @@
 using System.IO;
 using UnityEditor;
 using UnityEditor.Callbacks;
+#if Unity_IOS
 using UnityEditor.iOS.Xcode;
+#endif
 using UnityEngine;
  
 namespace SH.Ads.Editor
 {
-   public class BuildProcessor
+#if Unity_IOS
+    public class BuildProcessor
    {
       [PostProcessBuild(45)]
       private static void OnPostProcessBuildCocoaPodsAdjustments(BuildTarget buildTarget, string pathToBuiltProject)
@@ -78,5 +81,6 @@ namespace SH.Ads.Editor
          Debug.Log(">> Automation, DisableBitCode ... <<");
       }
    }
+#endif
 }
  

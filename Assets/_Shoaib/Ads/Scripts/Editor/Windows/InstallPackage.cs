@@ -23,7 +23,8 @@ namespace SH.Ads.Editor
         public Adon[] allAdons = new Adon[]
         {
              new FirebaseAnalytics(),
-             new RemoteConfig()
+             new RemoteConfig(),
+             new GoogleReview(),
         };
 
         ListRequest PackageManagerInstallRequestList;
@@ -81,8 +82,14 @@ namespace SH.Ads.Editor
                 EditorGUILayout.EndVertical();
             }
             else
-                EditorGUILayout.HelpBox("Importing package is in progress. Please wait for it complete.", MessageType.Warning);
+            {
+                EditorGUILayout.HelpBox("Importing package is in progress. Please wait for it complete. \n Some times it get stuck when you close it with X on rigt upper corner.", MessageType.Warning);
+                if (GUILayout.Button(new GUIContent("Click Here if stuck"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedHeight = 50 }))
+                {
+                    installedPackagesFiles.ActivePackage= string.Empty;
+                }
 
+            }
             EditorGUILayout.EndScrollView();
         }
 
@@ -181,7 +188,7 @@ namespace SH.Ads.Editor
 
                 foreach (var path in DependenciesAdOnPackages)
                 {
-                    if (path.Contains(adon.Symbol))
+                    if (path.Contains(adon.PackageName))
                     {
                         AssetDatabase.ImportPackage(path, true);
                         installedPackagesFiles.ActivePackage = adon.Name;

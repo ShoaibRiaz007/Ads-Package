@@ -7,6 +7,7 @@ namespace SH.Ads.Editor.Adons
     {
         public abstract string Name { get; }
         public abstract string Symbol { get; }
+        public abstract string PackageName { get; }
         public abstract bool SymbolPresent { get; }
         public abstract void AddSymbol();
         public abstract void RemoveSymbol();

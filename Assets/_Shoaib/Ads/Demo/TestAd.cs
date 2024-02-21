@@ -39,4 +39,9 @@ public class TestAd : MonoBehaviour
     {
         AdsManager.ShowAnyRewarded((type, am) => { m_text.text = type + "  : " + am; });
     }
+
+    public void RateUS()
+    {
+        AdsManager.RateUs((v) => Debug.LogError("Review is successfull : " + v));
+    }
 }

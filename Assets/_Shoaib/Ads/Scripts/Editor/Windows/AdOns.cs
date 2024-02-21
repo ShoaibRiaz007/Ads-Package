@@ -14,7 +14,8 @@ namespace SH.Ads.Editor
         public Adon[] allAdons = new Adon[]
         {
             new FirebaseAnalytics(),
-            new RemoteConfig()
+            new RemoteConfig(),
+            new GoogleReview(),
         };
         public override void OnEnable(AdSettings settings)
         {

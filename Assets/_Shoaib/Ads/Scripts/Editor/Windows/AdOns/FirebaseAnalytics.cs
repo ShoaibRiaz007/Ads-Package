@@ -20,6 +20,8 @@ namespace SH.Ads.Editor.Adons
 
         public override string Symbol => "FirebaseAnalytics";
 
+        public override string PackageName => "FirebaseAnalytics";
+
         public FirebaseAnalytics()// Default constructor
         {
             AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;

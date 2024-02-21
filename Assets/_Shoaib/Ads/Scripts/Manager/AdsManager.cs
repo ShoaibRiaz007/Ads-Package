@@ -90,6 +90,11 @@ namespace SH.Ads
         }
 #endif
 
+        public static void RateUs(Action<bool> Success)
+        {
+            AdSettings.ReviewApp(Success);
+        }
+
         /// <summary>
         /// Intialize All Advertisers
         /// </summary>

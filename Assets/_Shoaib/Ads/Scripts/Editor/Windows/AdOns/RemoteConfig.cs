@@ -1,7 +1,6 @@
 #if UNITY_EDITOR
 using System;
 using UnityEditor;
-using UnityEngine;
 
 namespace SH.Ads.Editor.Adons
 {
@@ -19,6 +18,8 @@ namespace SH.Ads.Editor.Adons
         public override bool SymbolPresent => symbol;
 
         public override string Symbol => "RemoteConfig";
+
+        public override string PackageName => "FirebaseRemoteConfig";
 
         public RemoteConfig()// Default constructor
         {

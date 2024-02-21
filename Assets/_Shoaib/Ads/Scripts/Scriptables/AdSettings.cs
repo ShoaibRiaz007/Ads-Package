@@ -3,11 +3,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace SH.Ads
 {
-    [CreateAssetMenu(fileName = "AdSetting", menuName = "SH/Ads Setting/Create New", order = 1)]
+    [CreateAssetMenu(fileName = "AdSetting", menuName = "SH/Ads/Ads Setting/Create New", order = 1)]
     public class AdSettings : ScriptableObject
     {
         static AdSettings _instance = null;
@@ -92,6 +93,21 @@ namespace SH.Ads
             }
         }
 #endif
+
+        internal static void ReviewApp(Action<bool> Success)
+        {
+#if GoogleReview
+            foreach (var t in Instance.m_AdOns)
+            {
+                if (t.GetType() == typeof(Adons.GoogleReview))
+                {
+                    Adons.GoogleReview FA = t as Adons.GoogleReview;
+                    FA.RequestRateUs(Success);
+                }
+            }
+#endif
+        }
+
         internal static void AdCalling(AdType adType) => Instance.CurrentPipline.ShowAd(adType);
         internal static void RemoveVisibleAd(AdType adType) => Instance.CurrentPipline.ShowAd(adType);
 
