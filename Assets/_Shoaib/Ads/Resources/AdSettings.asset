@@ -18,6 +18,5 @@ MonoBehaviour:
   m_TestMode: 0
   m_TestDeviceIDs: []
   m_RewardedAdsPrefab: {fileID: 0}
-  m_AdOns:
-  - {fileID: 11400000, guid: 2418f39fad713f04cbbb33b17ba9330f, type: 2}
-  CurrentPipline: {fileID: 11400000, guid: 2ee6aaf0248db2d47a43d0f6c39970e1, type: 2}
+  m_AdOns: []
+  CurrentPipline: {fileID: 11400000, guid: dd57f147975de754d844a5148403a9e7, type: 2}
