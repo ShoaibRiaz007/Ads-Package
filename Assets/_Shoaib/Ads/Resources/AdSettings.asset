@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ae505f231f5fd645886941915eeb0ed, type: 3}
+  m_Name: AdSettings
+  m_EditorClassIdentifier: 
+  m_IsForChildren: 0
+  m_AgeRating: 0
+  m_RewardAmountForRewardedAds: 500
+  m_TestMode: 0
+  m_TestDeviceIDs: []
+  m_RewardedAdsPrefab: {fileID: 0}
+  m_AdOns:
+  - {fileID: 11400000, guid: 2418f39fad713f04cbbb33b17ba9330f, type: 2}
+  CurrentPipline: {fileID: 11400000, guid: 2ee6aaf0248db2d47a43d0f6c39970e1, type: 2}

@@ -1,4 +1,5 @@
 #if UNITY_EDITOR
+using SH.Ads.Adons;
 using System;
 using UnityEditor;
 using UnityEngine;
@@ -7,19 +8,13 @@ namespace SH.Ads.Editor.Adons
 {
     public sealed class FirebaseAnalytics : Adon
     {
-        const string typeName = "SH.Ads.Adons.FirebaseAnalytics, Assembly-CSharp";
+        const string TYPE_NAME = "SH.Ads.Adons.FirebaseAnalytics, Assembly-CSharp";
 
-        static bool Installed = false,symbol=false;
-        public override bool IsInstalled=> Installed;
+
+        protected override string Symbol => "FirebaseAnalytics";
+        protected override string Description => "Firebase Analytics allow us to moniter how user engage with the application. By default it will collect all the advertisers data after enabled";
 
         public override string Name => "Firebase Analytics";
-
-        public override string Description => "Firebase Analytics allow us to moniter how user engage with the application. By default it will collect all the advertisers data after enabled";
-
-        public override bool SymbolPresent => symbol;
-
-        public override string Symbol => "FirebaseAnalytics";
-
         public override string PackageName => "FirebaseAnalytics";
 
         public FirebaseAnalytics()// Default constructor
@@ -27,35 +22,57 @@ namespace SH.Ads.Editor.Adons
             AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
         }
 
+        public override void OnGUI()
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(Name, EditorStyles.largeLabel);
+            if (GUILayout.Button(SymbolPresent ? new GUIContent("Deactivate", $"Deactivate adon {Name}") : IsInstalled ? new GUIContent("Activate", $"Activate adon {Name}") : new GUIContent("Install", $"Install {Name} package"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
+            {
+                if (IsInstalled && SymbolPresent)
+                {
+                    RemoveSymbol();
+                }
+                if (IsInstalled && !SymbolPresent)
+                {
+                    AddSymbol();
+                }
+                else
+                    AdvertiserEditorWindow.ShowPanel<InstallPackage>();
+            }
+            GUILayout.EndHorizontal();
+            EditorGUILayout.LabelField(Description, EditorStyles.textArea);
+            GUILayout.EndVertical();
+            GUILayout.Space(20);
+        }
         public override void CheckIfInstalled()
         {
             try
             {
-                Type firebaseAnalyticsType = Type.GetType("Firebase.Analytics.FirebaseAnalytics, Firebase.Analytics");
-
-
+                Type firebaseAnalyticsType = Type.GetType(TYPE_NAME);
                 if (firebaseAnalyticsType != null)
                 {
-                    Installed = true;
+                    IsInstalled = true;
                 }
                 else
                 {
-                    Installed = false;
+                    IsInstalled = false;
                 }
             }
             catch
             {
-                Installed = false;
+                IsInstalled = false;
             }
 
-            symbol = CheckIfSymboIsPresent(Symbol);
+            SymbolPresent = CheckIfSymboIsPresent(Symbol);
         }
         public override void RemoveSymbol()
         {
             var settings = AdSettings.Load();
             for (int i = 0;i<settings.m_AdOns.Count;i++)
             {
-                if (settings.m_AdOns[i].GetType() == Type.GetType(typeName))
+                if (settings.m_AdOns[i].GetType() == Type.GetType(TYPE_NAME))
                 {
                     settings.m_AdOns.RemoveAt(i);
                     EditorUtility.SetDirty(settings);
@@ -70,7 +87,7 @@ namespace SH.Ads.Editor.Adons
             var settings = AdSettings.Load();
             for (int i = 0; i < settings.m_AdOns.Count; i++)
             {
-                if (settings.m_AdOns[i].GetType() == Type.GetType(typeName))
+                if (settings.m_AdOns[i].GetType() == Type.GetType(TYPE_NAME))
                 {
                     EditorUtility.DisplayDialog("Adon Already Exist", $"The Adon '{Name}' you are trying to add already exists.", "OK");
                     return;
@@ -106,6 +123,8 @@ namespace SH.Ads.Editor.Adons
             }
 #endif
         }
+
+
     }
 }
 #endif

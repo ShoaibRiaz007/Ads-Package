@@ -7,19 +7,12 @@ namespace SH.Ads.Editor.Adons
 {
     public sealed class GoogleReview : Adon
     {
-        const string typeName = "SH.Ads.Adons.GoogleReview, Assembly-CSharp";
-
-        static bool Installed = false,symbol=false;
-        public override bool IsInstalled=> Installed;
+        const string TYPE_NAME = "SH.Ads.Adons.GoogleReview, Assembly-CSharp";
 
         public override string Name => "Google Play Review";
 
-        public override string Description => "The Google Play In-App Review API lets you prompt users to submit Play Store ratings and reviews without the inconvenience of leaving your app or game.";
-
-        public override bool SymbolPresent => symbol;
-
-        public override string Symbol => "GoogleReview";
-
+        protected override string Description => "The Google Play In-App Review API lets you prompt users to submit Play Store ratings and reviews without the inconvenience of leaving your app or game.";
+        protected override string Symbol => "GoogleReview";
         public override string PackageName => "com.google.play.review";
 
         public GoogleReview()// Default constructor
@@ -27,34 +20,59 @@ namespace SH.Ads.Editor.Adons
             AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
         }
 
+        public override void OnGUI()
+        {
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField(Name, EditorStyles.largeLabel);
+            if (GUILayout.Button(SymbolPresent ? new GUIContent("Deactivate", $"Deactivate adon {Name}") : IsInstalled ? new GUIContent("Activate", $"Activate adon {Name}") : new GUIContent("Install", $"Install {Name} package"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
+            {
+                if (IsInstalled && SymbolPresent)
+                {
+                    RemoveSymbol();
+                }
+                if (IsInstalled && !SymbolPresent)
+                {
+                    AddSymbol();
+                }
+                else
+                    AdvertiserEditorWindow.ShowPanel<InstallPackage>();
+            }
+            GUILayout.EndHorizontal();
+            EditorGUILayout.LabelField(Description, EditorStyles.textArea);
+            GUILayout.EndVertical();
+            GUILayout.Space(20);
+        }
+
         public override void CheckIfInstalled()
         {
             try
             {
-                Type remoteConfigType = Type.GetType("Google.Play.Review.ReviewManager, Google.Play.Review");
+                Type remoteConfigType = Type.GetType(TYPE_NAME);
 
                 if (remoteConfigType != null)
                 {
-                    Installed = true;
+                    IsInstalled = true;
                 }
                 else
                 {
-                    Installed = false;
+                    IsInstalled = false;
                 }
             }
             catch
             {
-                Installed = false;
+                IsInstalled = false;
             }
 
-            symbol = CheckIfSymboIsPresent(Symbol);
+            SymbolPresent = CheckIfSymboIsPresent(Symbol);
         }
         public override void RemoveSymbol()
         {
             var settings = AdSettings.Load();
             for (int i = 0;i<settings.m_AdOns.Count;i++)
             {
-                if (settings.m_AdOns[i].GetType() == Type.GetType(typeName))
+                if (settings.m_AdOns[i].GetType() == Type.GetType(TYPE_NAME))
                 {
                     settings.m_AdOns.RemoveAt(i);
                     EditorUtility.SetDirty(settings);
@@ -69,7 +87,7 @@ namespace SH.Ads.Editor.Adons
             var settings = AdSettings.Load();
             for (int i = 0; i < settings.m_AdOns.Count; i++)
             {
-                if (settings.m_AdOns[i].GetType() == Type.GetType(typeName))
+                if (settings.m_AdOns[i].GetType() == Type.GetType(TYPE_NAME))
                 {
                     EditorUtility.DisplayDialog("Adon Already Exist", $"The Adon '{Name}' you are trying to add already exists.", "OK");
                     return;
@@ -81,14 +99,14 @@ namespace SH.Ads.Editor.Adons
         void OnAfterAssemblyReload()
         {
 #if GoogleReview
-            Type type = Type.GetType(typeName, false, true);
+            Type type = Type.GetType(TYPE_NAME, false, true);
 
             if (type != null)
             {
                 var setting = AdSettings.Load();
                 for (int i = 0; i < setting.m_AdOns.Count; i++)
                 {
-                    if (setting.m_AdOns[i].GetType() == Type.GetType(typeName))
+                    if (setting.m_AdOns[i].GetType() == Type.GetType(TYPE_NAME))
                     {
                         
                         return;
@@ -101,7 +119,7 @@ namespace SH.Ads.Editor.Adons
             }
             else
             {
-                Debug.LogError($"No type found. Finding type {typeName}");
+                Debug.LogError($"No type found. Finding type {TYPE_NAME}");
             }
 #endif
         }

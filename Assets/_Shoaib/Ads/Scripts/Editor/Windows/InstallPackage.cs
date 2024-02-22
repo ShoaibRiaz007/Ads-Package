@@ -166,10 +166,7 @@ namespace SH.Ads.Editor
 
             if (installedPackagesFiles.HasPackage(name) && GUILayout.Button(new GUIContent("Delete", $"Delete all files from package {name}"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
             {
-                if(EditorUtility.DisplayDialog("Delete package files", $"Are you sure you want to delete [{name}] package files. \n PLEASE NOTE THIS ACTION CAN NOT BE UNDO", "Delete", "Cancel"))
-                {
-                    installedPackagesFiles.RemoveInstalled(name);
-                }
+                installedPackagesFiles.RemoveInstalled(name);
             }
 
             EditorGUILayout.EndHorizontal();
@@ -198,7 +195,7 @@ namespace SH.Ads.Editor
                        
                 }
                 if (!found)
-                    EditorUtility.DisplayDialog("Error Package not found", $"In Dictionary  [{DependenceisAdonsPath}] package [{adon.Symbol}] not found. Please create folder and place dependent packages in it.", "OK");
+                    EditorUtility.DisplayDialog("Error Package not found", $"In Dictionary  [{DependenceisAdonsPath}] package [{adon.PackageName}] not found. Please create folder and place dependent packages in it.", "OK");
 
             }
 

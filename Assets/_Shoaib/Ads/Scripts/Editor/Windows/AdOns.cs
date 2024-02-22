@@ -31,35 +31,10 @@ namespace SH.Ads.Editor
             scrollPos = EditorGUILayout.BeginScrollView(scrollPos, new GUIStyle(EditorStyles.helpBox));
             for(int i = 0; i < allAdons.Length; i++)
             {
-                ShowOption(allAdons[i]);
+                allAdons[i].OnGUI();
             }
 
             EditorGUILayout.EndScrollView();
-        }
-
-        void ShowOption(Adon adon)
-        {
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-
-            GUILayout.BeginHorizontal();
-            EditorGUILayout.LabelField(adon.Name, EditorStyles.largeLabel);
-            if (GUILayout.Button(adon.SymbolPresent ? new GUIContent("Deactivate", $"Deactivate adon {adon.Name}") : adon.IsInstalled ? new GUIContent("Activate", $"Activate adon {adon.Name}") : new GUIContent("Install", $"Install {adon.Name} package"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
-            {
-                if (adon.IsInstalled && adon.SymbolPresent)
-                {
-                    adon.RemoveSymbol();
-                } if (adon.IsInstalled && !adon.SymbolPresent)
-                {
-                    adon.AddSymbol();
-                }
-                else
-                    AdvertiserEditorWindow.ShowPanel<InstallPackage>();
-            }
-            GUILayout.EndHorizontal();
-            EditorGUILayout.LabelField(adon.Description, EditorStyles.textArea);
-            GUILayout.EndVertical();
-
-            GUILayout.Space(20);
         }
 
         void Header()
