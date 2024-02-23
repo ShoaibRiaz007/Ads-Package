@@ -22,6 +22,7 @@ namespace SH.Ads
             new SelectPipline(),
             new ManageAdvertiser(),
             new InstallPackage(),
+            new DeletePackage(),
             new AdOns(),
             new AboutMe(),
         };
@@ -68,7 +69,7 @@ namespace SH.Ads
 
         void AddContentItem(IWindow window,int index)
         {
-            if (GUILayout.Button(new GUIContent(window.Name, window.ToolTip), new GUIStyle(EditorStyles.toolbarButton) { margin = new RectOffset(5, 5, 5, 5), fixedHeight = 30, alignment = TextAnchor.MiddleLeft }))
+            if (GUILayout.Button(new GUIContent(window.Name, window.ToolTip), new GUIStyle(EditorStyles.toolbarButton) { margin = new RectOffset(5, 5, 5, 5), fixedHeight = 30, alignment = TextAnchor.MiddleLeft, normal={ scaledBackgrounds = { }}, onHover = {  textColor = Color.magenta} }))
             {
                 currentWindow = window;
                 currentWindow.OnEnable(AdSetting);

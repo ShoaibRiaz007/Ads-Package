@@ -1,5 +1,4 @@
 #if UNITY_EDITOR
-using Codice.CM.Common.Serialization.Replication;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -17,9 +16,8 @@ namespace SH.Ads.Editor
             [System.Serializable]
             class IFile
             {
-                [SerializeField] string m_FilePath;
+                [SerializeField] internal string m_FilePath;
                 [SerializeField] internal bool m_Delete;
-
                 internal IFile(string path)
                 {
                     m_FilePath = path;
@@ -38,6 +36,7 @@ namespace SH.Ads.Editor
                             AssetDatabase.DeleteAsset(m_FilePath);
                         }
                     }
+                    m_FilePath = null;
                 }
 
                 public void OnGUI()
@@ -46,7 +45,7 @@ namespace SH.Ads.Editor
                         return;
 
                     EditorGUILayout.BeginHorizontal(m_Delete ? EditorStyles.helpBox : EditorStyles.linkLabel);
-                    m_Delete = EditorGUILayout.ToggleLeft("", m_Delete, GUILayout.Width(15));
+                    m_Delete = EditorGUILayout.ToggleLeft(string.Empty, m_Delete, GUILayout.Width(30));
                     EditorGUILayout.LabelField(m_FilePath);
                     if (GUILayout.Button("Ping", GUILayout.Width(50)))
                     {
@@ -58,43 +57,73 @@ namespace SH.Ads.Editor
 
 
             public string PackageName;
-            [SerializeField] IFile[] m_IFiles;
-            [HideInInspector,SerializeField]bool foldout=true;
+            [SerializeField] List<IFile> m_IFiles;
+            [HideInInspector,SerializeField]bool m_FoldOut=false;
             internal IPackageFiles(string packageName,string[] files)
             {
                 PackageName=packageName;
                 int count = files.Length;
-                m_IFiles = new IFile[count];
+                m_IFiles = new  List<IFile>();
                 for(int i = 0; i < count; i++)
                 {
-                    m_IFiles[i] = new IFile(files[i]);
+                    if (!string.IsNullOrEmpty(files[i]))
+                        m_IFiles.Add(new IFile(files[i]));
                 }
             }
 
             public void OnGUI()
             {
                 EditorGUILayout.BeginHorizontal();
-                if (GUILayout.Button("Select All"))
+                
+               
+
+                m_FoldOut = EditorGUILayout.Foldout(m_FoldOut, PackageName, EditorStyles.foldoutHeader);
+
+                if (GUILayout.Button("Delete Selected Package Files", new GUIStyle(EditorStyles.toolbarButton)
                 {
-                    for (int i = 0; i < m_IFiles.Length; i++)
-                        m_IFiles[i].m_Delete=true;
+                    fixedWidth = 200,
+                    normal = { textColor = Color.blue },
+                    hover = { textColor = Color.red }// Set the text color to red
+                }))
+                {
+                    if (EditorUtility.DisplayDialog("Delete package files", $"Are you sure you want to delete all selected [{m_IFiles.Count}] files. \n\n\n PLEASE NOTE THIS ACTION CAN NOT BE UNDONE", "Delete", "Cancel"))
+                    {
+                        Delete();
+                        m_IFiles.RemoveAll(file => string.IsNullOrEmpty(file.m_FilePath));
+                        if (m_IFiles.Count == 0)
+                        {
+                            Load().m_Installed.Remove(this);
+                        }
+                        if (m_IFiles.Count == 0)
+                            Load().m_Installed.Remove(this);
+                        EditorUtility.SetDirty(Load());
+                        AssetDatabase.SaveAssets();
+                        return;
+                    }
                 }
 
-                if (GUILayout.Button("Select None"))
+
+                if (GUILayout.Button("Select All", GUILayout.Width(80)))
                 {
-                    for (int i = 0; i < m_IFiles.Length; i++)
+                    for (int i = 0; i < m_IFiles.Count; i++)
+                        m_IFiles[i].m_Delete = true;
+                }
+
+                if (GUILayout.Button("Select None", GUILayout.Width(80)))
+                {
+                    for (int i = 0; i < m_IFiles.Count; i++)
                         m_IFiles[i].m_Delete = false;
                 }
                 EditorGUILayout.EndHorizontal();
-
-                foldout = EditorGUILayout.Foldout(foldout, PackageName, EditorStyles.foldoutHeader);
-
                 EditorGUI.indentLevel++;
-                if (foldout)
-                    for(int i=0;i<m_IFiles.Length;i++)
+                if (m_FoldOut)
+                    for(int i=0;i<m_IFiles.Count;i++)
                     m_IFiles[i].OnGUI();
 
+
                 EditorGUI.indentLevel--;
+
+                EditorGUILayout.Space(20);
             }
 
             public void Delete()
@@ -108,6 +137,9 @@ namespace SH.Ads.Editor
 
 
         [SerializeField] List<IPackageFiles> m_Installed = new List<IPackageFiles>();
+
+
+        internal ref List<IPackageFiles> Installed =>ref m_Installed;
 
         public string ActivePackage;
 
@@ -143,60 +175,12 @@ namespace SH.Ads.Editor
             EditorUtility.SetDirty(this);
         }
         public bool HasPackage(string packageID) => m_Installed.Find(package => package.PackageName == packageID) != null;
-
         public void RemoveInstalled(string packageID)
         {
             if (!HasPackage(packageID))
                 return;
 
-            for (int i = 0; i < m_Installed.Count; i++)
-            {
-                if (m_Installed[i].PackageName == packageID)
-                {
-                    Window.ShowWindow(m_Installed[i]);
-                    break;
-                }
-            }
-           
-        }
-
-        class Window : EditorWindow
-        {
-            static IPackageFiles Package;
-            static Vector2 ScrollPos = Vector2.zero;
-            internal static void ShowWindow(IPackageFiles package)
-            {
-                GetWindow<Window>("");
-                Package = package;
-            }
-
-            private void OnGUI()
-            {
-                if(Package == null)
-                {
-                    Close();
-                    return;
-                }
-
-                ScrollPos = EditorGUILayout.BeginScrollView(ScrollPos, new GUIStyle(EditorStyles.helpBox));
-
-                Package.OnGUI();
-
-                EditorGUILayout.EndScrollView();
-
-                if (GUILayout.Button("Delete Selected Package Files", new GUIStyle(EditorStyles.toolbarButton) { fixedHeight = 50, }))
-                {
-                    if (EditorUtility.DisplayDialog("Delete package files", $"Are you sure you want to delete all selected files. \n\n\n PLEASE NOTE THIS ACTION CAN NOT BE UNDONE", "Delete", "Cancel"))
-                    {
-                        Package.Delete();
-                        Load().m_Installed.Remove(Package);
-                        EditorUtility.SetDirty(this);
-                        AssetDatabase.SaveAssets();
-                        Close();
-                        return;
-                    }
-                }
-            }
+            AdvertiserEditorWindow.ShowPanel<DeletePackage>();
         }
     }
 }

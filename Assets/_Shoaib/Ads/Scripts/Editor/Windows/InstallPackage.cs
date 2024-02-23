@@ -200,16 +200,8 @@ namespace SH.Ads.Editor
             }
 
             if (installedPackagesFiles.HasPackage(adon.Name) && GUILayout.Button(new GUIContent("Delete", $"Delete all files from package {adon.Name}"), new GUIStyle(GUI.skin.button) { alignment = TextAnchor.MiddleCenter, fixedWidth = 80 }))
-            {
-                if (EditorUtility.DisplayDialog("Delete package files", $"Are you sure you want to delete [{adon.Name}] package files. \n PLEASE NOTE THIS ACTION CAN NOT BE UNDO", "Delete", "Cancel"))
-                {
-                    installedPackagesFiles.RemoveInstalled(adon.Name);
-                    adon.RemoveSymbol();
-                    for (int i = 0; i < allAdons.Length; i++)
-                    {
-                        allAdons[i].CheckIfInstalled();
-                    }
-                }
+            { 
+                installedPackagesFiles.RemoveInstalled(adon.Name);
             }
 
             EditorGUILayout.EndHorizontal();
