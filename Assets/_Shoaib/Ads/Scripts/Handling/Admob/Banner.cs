@@ -42,7 +42,7 @@ namespace SH.Ads.Admob
                 switch (adType)
                 {
                     case AdType.Banner:
-                        bannerView = new BannerView(TestMode ? _Test_ID : IDs[count],AdSize.Leaderboard, AdPosition.Top);
+                        bannerView = new BannerView(TestMode ? _Test_ID : IDs[count],AdSize.Banner, AdPosition.Top);
                         break;
                     case AdType.BigBanner:
                         bannerView = new BannerView(TestMode ? _Test_ID : IDs[count], AdSize.MediumRectangle, AdPosition.BottomLeft);
@@ -142,16 +142,16 @@ namespace SH.Ads.Admob
             switch (adType)
             {
                 case AdType.Banner:
-                    width = Screen.width;
-                    height =CalculateBannerHeight() + 15;
-                    banner.sizeDelta = new Vector2(width, height == 0 ? CalculateBannerHeight() : height);
+                    width = AdSize.Banner.Width+10;
+                    height =AdSize.Banner.Height+10;
+                    banner.sizeDelta = new Vector2(width, height);
                     banner.anchorMin = new Vector2(0.5f, 1f);
                     banner.anchorMax = new Vector2(0.5f, 1f);
                     banner.anchoredPosition = new Vector2(0, -banner.sizeDelta.y / 2);
                     break;
                 case AdType.BigBanner:
                     width = AdSize.MediumRectangle.Width * Screen.dpi / 160 + 10;
-                    height = 10 + AdSize.MediumRectangle.Height * Screen.dpi / 160;
+                    height = 10 + AdSize.MediumRectangle.Height * Screen.dpi / 160 +10;
                     banner.sizeDelta = new Vector2(width, height);
                     banner.anchoredPosition = new Vector2( 1  * width / 2, height / 2);
                     banner.anchorMin = new Vector2(0f, 0f);

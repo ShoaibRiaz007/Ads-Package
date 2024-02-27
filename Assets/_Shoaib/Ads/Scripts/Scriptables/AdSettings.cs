@@ -30,6 +30,7 @@ namespace SH.Ads
 
 
         [SerializeField, Header("Ads Setting")] float m_RewardAmountForRewardedAds = 500;
+
         [SerializeField,Tooltip("Show Test Ads")] bool m_TestMode ;
         [SerializeField]List<string> m_TestDeviceIDs = new List<string>();
        
@@ -47,8 +48,9 @@ namespace SH.Ads
                 yield return t.Intialize(Instance);
             }
             yield return null;
-
-            yield return Instance.CurrentPipline.Intialize();
+            
+            if(!RemoveAd)
+                yield return Instance.CurrentPipline.Intialize();
 
             OnComplete?.Invoke();
         }
