@@ -10,7 +10,8 @@ namespace SH.Ads
 {
     public class AdvertiserEditorWindow : EditorWindow
     {
-        const string JSON_SAVE_PATH = "Assets/_Shoaib/Ads/Json/config.json";
+        const string JSON_SAVE_PATH_PIPLINE = "Assets/_Shoaib/Ads/Json/Ad Setting.json";
+        const string JSON_SAVE_PATH_ConfigData = "Assets/_Shoaib/Ads/Json/Remote Config Data.json";
         static AdSettings AdSetting;
         static Vector2 ScrollPosition = Vector2.zero;
 
@@ -52,7 +53,7 @@ namespace SH.Ads
 
         protected void OnGUI()
         {
-            Footer();
+            Top();
             EditorGUILayout.BeginHorizontal();
             Left();
             Right();
@@ -84,13 +85,13 @@ namespace SH.Ads
             EditorGUILayout.EndScrollView();
         }
 
-        void Footer()
+        void Top()
         {
             EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
             if (GUILayout.Button(new GUIContent("To Json", "Convert to json for remote config or custom API call"), new GUIStyle(EditorStyles.toolbarButton) { margin = new RectOffset(5, 5, 5, 5), fixedHeight = 30, alignment = TextAnchor.MiddleLeft }))
             {
                 SetDirty();
-                Selection.activeObject= AssetDatabase.LoadAssetAtPath(JSON_SAVE_PATH, typeof(TextAsset));
+                Selection.activeObject= AssetDatabase.LoadAssetAtPath(JSON_SAVE_PATH_PIPLINE, typeof(TextAsset));
             }
             if (GUILayout.Button(new GUIContent("Select Ad Setting", "Ad setting scriptable object"), new GUIStyle(EditorStyles.toolbarButton) { margin = new RectOffset(5, 5, 5, 5), fixedHeight = 30, alignment = TextAnchor.MiddleRight }))
             {
@@ -102,13 +103,18 @@ namespace SH.Ads
         public static new void SetDirty()
         {
             string json = JsonUtility.ToJson(AdSetting.CurrentPipline, true);
-            File.WriteAllText(JSON_SAVE_PATH, json);
+           
+            File.WriteAllText(JSON_SAVE_PATH_PIPLINE, json);
+#if RemoteConfig
+            json = JsonUtility.ToJson(Ads.Adons.RemoteConfig.Load().m_RemoteData, true);
+            File.WriteAllText(JSON_SAVE_PATH_ConfigData, json);
+#endif
             AssetDatabase.Refresh();
         }
 
         public static string AfterSertialization()
         {
-            return File.ReadAllText(JSON_SAVE_PATH);
+            return File.ReadAllText(JSON_SAVE_PATH_PIPLINE);
         }
 
         
@@ -125,7 +131,6 @@ namespace SH.Ads
                     break;
                 }
             }
-           
         }
 
         internal static void ShowPanel<T>() where T : IWindow

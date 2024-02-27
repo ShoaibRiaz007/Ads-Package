@@ -1,5 +1,4 @@
 #if RemoteConfig
-using Firebase.Extensions;
 using Firebase.RemoteConfig;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -24,28 +23,57 @@ namespace SH.Ads.Adons
             return remoteConfig;
         }
 #endif
+        static RemoteConfig Instance = null;
 
-        const string AD_SETTINGS = "AdSettings";
+        [HideInInspector]public RemoteData m_RemoteData;
+        [HideInInspector] public string m_AdSettingKey= "AdSettings", m_DataKey = "Data";
+
+
+        public static RemoteData Data
+        {
+            get
+            {
+                if (Instance == null)
+                {
+                    Debug.LogError("Ad Error : Intialize the Ads First then you can read these values");
+                    return new RemoteData();
+                }
+
+                return Instance.m_RemoteData;
+            }
+        }
 
         internal override IEnumerator Intialize(AdSettings setting)
         {
-            if(FirebaseRemoteConfig.DefaultInstance==null)
+            Instance = this;
+            if (FirebaseRemoteConfig.DefaultInstance==null)
                 yield return Firebase.FirebaseApp.CheckAndFixDependenciesAsync();
+            
             Dictionary<string, object> defaults = new Dictionary<string, object>
             {
-                { AD_SETTINGS, "{}" }
+                { m_AdSettingKey, "{}" },
+                { m_DataKey, "{}" },
             };
 
             yield return FirebaseRemoteConfig.DefaultInstance.SetDefaultsAsync(defaults)
               .ContinueWith(result => FirebaseRemoteConfig.DefaultInstance.FetchAndActivateAsync())
               .Unwrap();
-            var json = FirebaseRemoteConfig.DefaultInstance.GetValue(AD_SETTINGS).StringValue;
+
+            var json = FirebaseRemoteConfig.DefaultInstance.GetValue(m_AdSettingKey).StringValue;
             if (json == "{}")// check if json is null
             {
-                Debug.Log("Ad Status : Remote config loaded but is empty,so Ignoring it");
+                Debug.Log("Ad Status : Default ad setting key not found");
                 yield break;
             }
+           
             JsonUtility.FromJsonOverwrite(json, setting.CurrentPipline);
+            json = FirebaseRemoteConfig.DefaultInstance.GetValue(m_DataKey).StringValue;
+            if (json == "{}")// check if json is null
+            {
+                Debug.Log("Ad Status : Data key not not found");
+                yield break;
+            }
+            JsonUtility.FromJsonOverwrite(json, m_RemoteData);
             yield return null;// now load advertisers after one frame
         }
     }

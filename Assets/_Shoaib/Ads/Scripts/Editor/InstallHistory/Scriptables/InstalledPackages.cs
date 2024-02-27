@@ -14,7 +14,116 @@ namespace SH.Ads.Editor
         internal class IPackageFiles
         {
             [System.Serializable]
-            class IFile
+            class IFolder
+            {
+                [SerializeField] internal string m_Name;
+                [SerializeField] internal bool m_Delete;
+                [SerializeField] internal List<IFolder> m_SubFolders;
+                [SerializeField] internal List<IFile> m_Files;
+                bool m_FoldOut = false;
+                [SerializeField,HideInInspector] bool m_CacheDelete;
+
+                int FilesAndFolderCount => m_Files.Count + m_SubFolders.Count;
+
+                internal IFolder(string path)
+                {
+                    m_Name = path;
+                    m_Delete = true;
+                    m_SubFolders = new List<IFolder>();
+                    m_Files = new List<IFile>();
+                }
+
+                public void Delete()
+                {
+                    if (!m_Delete)
+                        return;
+
+                    foreach (var file in m_Files)
+                    {
+                        file.Delete();
+                    }
+                    m_Files.RemoveAll(folder => string.IsNullOrEmpty(folder.m_FilePath));
+                    foreach (var subFolder in m_SubFolders)
+                    {
+                        subFolder.Delete();
+                    }
+
+                    RemoveEmptyFolders(this);
+                }
+
+                void RemoveEmptyFolders(IFolder parentFolder)
+                {
+                    for (int i = m_SubFolders.Count - 1; i >= 0; i--)
+                    {
+                        var subFolder = m_SubFolders[i];
+                        subFolder.RemoveEmptyFolders(this);
+                    }
+
+                    m_SubFolders.RemoveAll(a => a.FilesAndFolderCount == 0);
+
+                    if (FilesAndFolderCount == 0)
+                    {
+                        if (parentFolder != null && parentFolder.m_SubFolders.Contains(this))
+                        {
+                            parentFolder.m_SubFolders.Remove(this);
+                        }
+                        m_Name = null;
+                    }
+                }
+
+
+                void UpdateDeleteStatus(bool delete)
+                {
+                    foreach (var t in m_SubFolders)
+                    {
+                        t.m_Delete = delete;
+                        t.UpdateDeleteStatus(delete);
+                    }
+                       
+                    foreach (var t in m_Files)
+                        t.m_Delete = delete;
+                }
+                public void OnGUI()
+                {
+                    if (string.IsNullOrEmpty(m_Name))
+                        return;
+
+                   
+                    EditorGUILayout.BeginHorizontal(m_Delete ? EditorStyles.helpBox : EditorStyles.linkLabel);
+                    
+                    m_Delete = EditorGUILayout.ToggleLeft(string.Empty, m_Delete, GUILayout.Width(EditorGUI.indentLevel*20));
+                    
+                    if(m_Delete != m_CacheDelete)
+                    {
+                        UpdateDeleteStatus(m_Delete);
+                    }
+                    m_CacheDelete = m_Delete;
+
+                    m_FoldOut = EditorGUILayout.Foldout(m_FoldOut, m_Name);
+
+                    EditorGUILayout.LabelField(FilesAndFolderCount.ToString(),new GUIStyle(EditorStyles.boldLabel) { alignment= TextAnchor.MiddleRight});
+                    EditorGUILayout.EndHorizontal();
+                    if (!m_FoldOut)
+                        return;
+                    EditorGUI.indentLevel++;
+
+                    foreach (var subFolder in m_SubFolders)
+                    {
+                        subFolder.OnGUI();
+                    }
+
+                    foreach (var file in m_Files)
+                    {
+                        file.OnGUI();
+                    }
+
+                    EditorGUI.indentLevel--;
+                }
+            }
+
+
+            [System.Serializable]
+            internal class IFile
             {
                 [SerializeField] internal string m_FilePath;
                 [SerializeField] internal bool m_Delete;
@@ -45,7 +154,7 @@ namespace SH.Ads.Editor
                         return;
 
                     EditorGUILayout.BeginHorizontal(m_Delete ? EditorStyles.helpBox : EditorStyles.linkLabel);
-                    m_Delete = EditorGUILayout.ToggleLeft(string.Empty, m_Delete, GUILayout.Width(30));
+                    m_Delete = EditorGUILayout.ToggleLeft(string.Empty, m_Delete, GUILayout.Width(EditorGUI.indentLevel * 20));
                     EditorGUILayout.LabelField(m_FilePath);
                     if (GUILayout.Button("Ping", GUILayout.Width(50)))
                     {
@@ -56,26 +165,54 @@ namespace SH.Ads.Editor
             }
 
 
+
             public string PackageName;
-            [SerializeField] List<IFile> m_IFiles;
+            [SerializeField] List<IFolder> m_IFolders;
             [HideInInspector,SerializeField]bool m_FoldOut=false;
-            internal IPackageFiles(string packageName,string[] files)
+
+            internal IPackageFiles(string packageName, string[] files)
             {
-                PackageName=packageName;
-                int count = files.Length;
-                m_IFiles = new  List<IFile>();
-                for(int i = 0; i < count; i++)
+                PackageName = packageName;
+                m_IFolders = new List<IFolder>();
+
+                Dictionary<string, IFolder> folderDictionary = new Dictionary<string, IFolder>();
+
+                foreach (var filePath in files)
                 {
-                    if (!string.IsNullOrEmpty(files[i]))
-                        m_IFiles.Add(new IFile(files[i]));
+                    string[] pathParts = filePath.Split('/');
+                    IFolder currentFolder = null;
+
+                    for (int i = 0; i < pathParts.Length - 1; i++)
+                    {
+                        string folderPath = string.Join("/", pathParts, 0, i + 1);
+
+                        if (!folderDictionary.TryGetValue(folderPath, out currentFolder))
+                        {
+                            currentFolder = new IFolder(folderPath);
+                            folderDictionary.Add(folderPath, currentFolder);
+
+                            if (i == 0)
+                            {
+                                m_IFolders.Add(currentFolder);
+                            }
+                            else
+                            {
+                                string parentFolderPath = string.Join("/", pathParts, 0, i);
+                                IFolder parentFolder = folderDictionary[parentFolderPath];
+                                parentFolder.m_SubFolders.Add(currentFolder);
+                            }
+                        }
+                    }
+
+                    IFile file = new IFile(filePath);
+                    currentFolder.m_Files.Add(file);
                 }
             }
+
 
             public void OnGUI()
             {
                 EditorGUILayout.BeginHorizontal();
-                
-               
 
                 m_FoldOut = EditorGUILayout.Foldout(m_FoldOut, PackageName, EditorStyles.foldoutHeader);
 
@@ -86,15 +223,15 @@ namespace SH.Ads.Editor
                     hover = { textColor = Color.red }// Set the text color to red
                 }))
                 {
-                    if (EditorUtility.DisplayDialog("Delete package files", $"Are you sure you want to delete all selected [{m_IFiles.Count}] files. \n\n\n PLEASE NOTE THIS ACTION CAN NOT BE UNDONE", "Delete", "Cancel"))
+                    if (EditorUtility.DisplayDialog("Delete package files", $"Are you sure you want to delete all selected [{m_IFolders.Count}] folders. \n\n\n PLEASE NOTE THIS ACTION CAN NOT BE UNDONE", "Delete", "Cancel"))
                     {
                         Delete();
-                        m_IFiles.RemoveAll(file => string.IsNullOrEmpty(file.m_FilePath));
-                        if (m_IFiles.Count == 0)
+                        m_IFolders.RemoveAll(folder => string.IsNullOrEmpty(folder.m_Name));
+                        if (m_IFolders.Count == 0)
                         {
                             Load().m_Installed.Remove(this);
                         }
-                        if (m_IFiles.Count == 0)
+                        if (m_IFolders.Count == 0)
                             Load().m_Installed.Remove(this);
                         EditorUtility.SetDirty(Load());
                         AssetDatabase.SaveAssets();
@@ -102,43 +239,51 @@ namespace SH.Ads.Editor
                     }
                 }
 
-
                 if (GUILayout.Button("Select All", GUILayout.Width(80)))
                 {
-                    for (int i = 0; i < m_IFiles.Count; i++)
-                        m_IFiles[i].m_Delete = true;
+                    foreach (var folder in m_IFolders)
+                    {
+                        folder.m_Delete = true;
+                    }
                 }
 
                 if (GUILayout.Button("Select None", GUILayout.Width(80)))
                 {
-                    for (int i = 0; i < m_IFiles.Count; i++)
-                        m_IFiles[i].m_Delete = false;
+                    foreach (var folder in m_IFolders)
+                    {
+                        folder.m_Delete = false;
+                    }
                 }
-                EditorGUILayout.EndHorizontal();
-                EditorGUI.indentLevel++;
-                if (m_FoldOut)
-                    for(int i=0;i<m_IFiles.Count;i++)
-                    m_IFiles[i].OnGUI();
 
+                EditorGUILayout.EndHorizontal();
+
+                EditorGUI.indentLevel++;
+
+                if (m_FoldOut)
+                {
+                    foreach (var folder in m_IFolders)
+                    {
+                        folder.OnGUI();
+                    }
+                }
 
                 EditorGUI.indentLevel--;
 
                 EditorGUILayout.Space(20);
             }
-
             public void Delete()
             {
-                foreach (var t in m_IFiles)
+                foreach (var t in m_IFolders)
                 {
                     t.Delete();
                 }
+
+                EditorUtility.SetDirty(Load());
             }
         }
 
 
         [SerializeField] List<IPackageFiles> m_Installed = new List<IPackageFiles>();
-
-
         internal ref List<IPackageFiles> Installed =>ref m_Installed;
 
         public string ActivePackage;

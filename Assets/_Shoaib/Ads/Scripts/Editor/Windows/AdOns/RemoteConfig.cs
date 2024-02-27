@@ -18,12 +18,21 @@ namespace SH.Ads.Editor.Adons
 
         public override string PackageName => "FirebaseRemoteConfig";
 
+#if RemoteConfig
+        Ads.Adons.RemoteConfig m_RemoteConfig;
+#endif
+        bool m_Expand= false;
+
         public RemoteConfig()// Default constructor
         {
             AssemblyReloadEvents.afterAssemblyReload += OnAfterAssemblyReload;
         }
         public override void OnGUI()
         {
+#if RemoteConfig
+            if (m_RemoteConfig == null)
+                m_RemoteConfig = Ads.Adons.RemoteConfig.Load();
+#endif
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
 
             GUILayout.BeginHorizontal();
@@ -41,10 +50,33 @@ namespace SH.Ads.Editor.Adons
                 else
                     AdvertiserEditorWindow.ShowPanel<InstallPackage>();
             }
+
             GUILayout.EndHorizontal();
             EditorGUILayout.LabelField(Description, EditorStyles.textArea);
+#if RemoteConfig
+            if (IsInstalled)
+            {
+                m_Expand = EditorGUILayout.Foldout(m_Expand, "Options");
+                if (m_Expand)
+                {
+                    GUILayout.BeginHorizontal();
+                    EditorGUILayout.LabelField("Key",EditorStyles.boldLabel); EditorGUILayout.LabelField("Value", EditorStyles.boldLabel);
+                    GUILayout.EndHorizontal();
+
+                    GUILayout.BeginHorizontal();
+                    m_RemoteConfig.m_AdSettingKey = EditorGUILayout.TextField(m_RemoteConfig.m_AdSettingKey); ; EditorGUILayout.LabelField("Ads Setting", EditorStyles.boldLabel);
+                    GUILayout.EndHorizontal();
+
+                    GUILayout.BeginHorizontal();
+                    m_RemoteConfig.m_DataKey = EditorGUILayout.TextField(m_RemoteConfig.m_DataKey); m_RemoteConfig.m_RemoteData = EditorGUILayout.ObjectField(m_RemoteConfig.m_RemoteData, typeof(RemoteData), false) as RemoteData;
+                    GUILayout.EndHorizontal();
+                }
+            }
+#endif
             GUILayout.EndVertical();
             GUILayout.Space(20);
+
+
         }
         public override void CheckIfInstalled()
         {
@@ -100,27 +132,27 @@ namespace SH.Ads.Editor.Adons
         void OnAfterAssemblyReload()
         {
 #if RemoteConfig
-            Type type = Type.GetType(typeName, false, true);
+            Type type = Type.GetType(TYPE_NAME, false, true);
 
             if (type != null)
             {
                 var setting = AdSettings.Load();
                 for (int i = 0; i < setting.m_AdOns.Count; i++)
                 {
-                    if (setting.m_AdOns[i].GetType() == Type.GetType(typeName))
+                    if (setting.m_AdOns[i].GetType() == Type.GetType(TYPE_NAME))
                     {
-                        
                         return;
                     }
                 }
-                setting.m_AdOns.Add(Ads.Adons.RemoteConfig.Load());
+                setting.m_AdOns.Add(m_RemoteConfig);
                 EditorUtility.SetDirty(setting);
+                EditorUtility.SetDirty(m_RemoteConfig);
                 EditorUtility.DisplayDialog("Adon Is Active", $"The Adon '{Name}' is now active.", "OK");
                 AssemblyReloadEvents.afterAssemblyReload -= OnAfterAssemblyReload;
             }
             else
             {
-                Debug.LogError($"No type found. Finding type {typeName}");
+                Debug.LogError($"No type found. Finding type {TYPE_NAME}");
             }
 #endif
         }
