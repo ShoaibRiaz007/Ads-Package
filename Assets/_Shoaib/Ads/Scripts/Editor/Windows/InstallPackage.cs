@@ -271,14 +271,17 @@ namespace SH.Ads.Editor
 
         private void ImportedItems(string[] obj)
         {
-            if (string.IsNullOrEmpty(installedPackagesFiles.ActivePackage))
+            if (!installedPackagesFiles ||string.IsNullOrEmpty(installedPackagesFiles.ActivePackage))
             {
                 Debug.LogError("Is null herer");
                 return;
             }
-            Debug.Log("Files Imported :" + obj.Length);
-
+            for (int i = 0; i < allAdons.Length; i++)
+            {
+                allAdons[i].CheckIfInstalled();
+            }
             installedPackagesFiles.AddInstalled(installedPackagesFiles.ActivePackage, obj);
+           
         }
         private void ImportPackageCompleted(string packageName)
         {

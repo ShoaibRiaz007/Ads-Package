@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 23c8fa3a97ab3e645ad05124206947f1, type: 3}
-  m_Name: CustomWaterfall
+  m_Script: {fileID: 11500000, guid: 393b6a2fe6516bb40ada9fa50bd5e326, type: 3}
+  m_Name: InstalledPackages
   m_EditorClassIdentifier: 
-  Advertisers: []
-  m_AdRules: []
+  m_Installed: []
+  ActivePackage: 

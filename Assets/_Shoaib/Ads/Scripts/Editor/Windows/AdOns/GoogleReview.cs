@@ -49,7 +49,7 @@ namespace SH.Ads.Editor.Adons
         {
             try
             {
-                Type remoteConfigType = Type.GetType(TYPE_NAME);
+                Type remoteConfigType = Type.GetType("Google.Play.Review.ReviewManager,Google.Play.Review");
 
                 if (remoteConfigType != null)
                 {
@@ -64,7 +64,6 @@ namespace SH.Ads.Editor.Adons
             {
                 IsInstalled = false;
             }
-
             SymbolPresent = CheckIfSymboIsPresent(Symbol);
         }
         public override void RemoveSymbol()

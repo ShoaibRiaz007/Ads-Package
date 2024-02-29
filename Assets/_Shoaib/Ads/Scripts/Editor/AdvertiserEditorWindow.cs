@@ -44,6 +44,7 @@ namespace SH.Ads
             Init();
             currentWindow = AllWindows[CurrentPanelIndex];
             currentWindow.OnEnable(AdSetting);
+           
         }
         private void OnDisable()
         {
@@ -120,6 +121,7 @@ namespace SH.Ads
         
         static void Init()
         {
+            FileHelper.CreateFolderHierarchy();
             AdSetting = AdSettings.Load();
             if (AdSetting.CurrentPipline == null)
                 AdSetting.CurrentPipline = Waterfall.Load();

@@ -50,7 +50,7 @@ namespace SH.Ads.Editor.Adons
         {
             try
             {
-                Type firebaseAnalyticsType = Type.GetType(TYPE_NAME);
+                Type firebaseAnalyticsType = Type.GetType("Firebase.Analytics.FirebaseAnalytics, Firebase.Analytics");
                 if (firebaseAnalyticsType != null)
                 {
                     IsInstalled = true;

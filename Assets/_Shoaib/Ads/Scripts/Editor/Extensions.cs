@@ -10,6 +10,38 @@ using SH.Ads;
 
 namespace SH
 {
+    public static class FileHelper
+    {
+        public static void CreateFolderHierarchy()
+        {
+            string[] Paths = new string[]
+            {
+                "Assets/_Shoaib/Ads/Json",
+                 "Assets/_Shoaib/Ads/Resources",
+                "Assets/_Shoaib/Ads/Data",
+                "Assets/_Shoaib/Ads/Scripts/Editor/InstallHistory/Data"
+            };
+            foreach(var path in Paths)
+            {
+                string[] folders = path.Split('/');
+
+                string currentPath = "";
+
+                foreach (string folder in folders)
+                {
+                    currentPath = Path.Combine(currentPath, folder);
+
+                    if (!Directory.Exists(currentPath))
+                    {
+                        Debug.Log("Creating folder: " + currentPath);
+                        Directory.CreateDirectory(currentPath);
+                    }
+                }
+            }
+        }
+    }
+
+
     public static class Extensions
     {
         static Dictionary<Ads.SupportedAdvertisers, string> Versions = new Dictionary<Ads.SupportedAdvertisers, string>();
