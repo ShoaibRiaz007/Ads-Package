@@ -64,7 +64,14 @@ namespace SH.Ads.Admob
 
         internal override void Remove()
         {
-            bannerView?.Destroy();
+            if (bannerView != null)
+            {
+                bannerView.OnBannerAdLoadFailed -= OnAdFailedToLoad;
+                bannerView.OnBannerAdLoaded -= OnAdLoaded;
+                bannerView.OnAdImpressionRecorded -= OnAdImpressionRecorded;
+                bannerView.OnAdPaid -= OnAdPaid;
+                bannerView.Destroy();
+            }
             IsAdShowing = false;
             placeHolder?.SetActive(false);
         }

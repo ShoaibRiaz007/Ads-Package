@@ -66,7 +66,7 @@ namespace SH.Ads.Piplines
             var rule = m_AdRules.FirstOrDefault(r => r.m_AdType == adType);
             var advertiser = Advertisers.FirstOrDefault(a => rule != null && a.advertiser == rule.m_Advertiser && a.ShowAd(adType));
 
-            if (advertiser == null && (adType == AdType.Rewarded || adType == AdType.RewardedInterstial))
+            if (advertiser == null && (adType == AdType.Rewarded || adType == AdType.RewardedInterstitial))
             {
                 BaseAdHandler.AdNotAvailble();
             }

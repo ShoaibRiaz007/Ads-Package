@@ -7,6 +7,7 @@ using System.IO;
 using System.Collections.Generic;
 using SH.Ads.Editor;
 using SH.Ads;
+using System.Linq;
 
 namespace SH
 {
@@ -48,6 +49,23 @@ namespace SH
         static Dictionary<Ads.SupportedAdvertisers, string> Versions = new Dictionary<Ads.SupportedAdvertisers, string>();
         static Dictionary<Ads.SupportedAdvertisers, bool> Installed = new Dictionary<Ads.SupportedAdvertisers, bool>();
         static Dictionary<string, bool> SupportedAdsTypes = new Dictionary<string, bool>();
+
+
+        public static List<T> GetInstanceOfAllSubClasses<T>()
+        {
+            return Assembly.GetAssembly(typeof(T))
+                           .GetTypes()
+                           .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract)
+                           .Select(a => (T)Activator.CreateInstance(a)).ToList();
+        }
+        public static List<Type> GetTypeOfAllSubClasses<T>()
+        {
+            return Assembly.GetAssembly(typeof(T))
+                           .GetTypes()
+                           .Where(t => t.IsSubclassOf(typeof(T)) && !t.IsAbstract)
+                           .ToList();
+        }
+
         public static bool SupportsAd(this Ads.SupportedAdvertisers advertiser, Ads.AdType adtype )
         {
             string tem = $"SH.Ads.{advertiser}.{adtype.ToString().Replace("Big", string.Empty)}";

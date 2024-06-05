@@ -150,7 +150,7 @@ namespace SH.Ads
         /// </summary>
         public static void ShowInterstitial()
         {
-            AdSettings.AdCalling(AdType.Interstial);
+            AdSettings.AdCalling(AdType.Interstitial);
         }
         /// <summary>
         /// Show Rewarded video ad
@@ -180,7 +180,7 @@ namespace SH.Ads
         public static void ShowRewardedInterstitial(Action<string, float> OnAdReward)
         {
             OnUserEarnedReward = OnAdReward;
-            AdSettings.AdCalling(AdType.RewardedInterstial);
+            AdSettings.AdCalling(AdType.RewardedInterstitial);
         }
         /// <summary>
         /// Show Rewarded Interstial Ad
@@ -191,7 +191,7 @@ namespace SH.Ads
         {
             OnUserEarnedReward = OnAdReward;
             OnRewardClosed = OnAdClosed;
-            AdSettings.AdCalling(AdType.RewardedInterstial);
+            AdSettings.AdCalling(AdType.RewardedInterstitial);
         }
         /// <summary>
         /// Will try to show Reward or Rewarded Interstial

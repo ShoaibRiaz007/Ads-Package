@@ -57,6 +57,10 @@ namespace SH.Ads.Admob
             requestConfiguration.TestDeviceIds = AdSettings.TestDevices;
             MobileAds.SetRequestConfiguration(requestConfiguration);
             MobileAds.SetiOSAppPauseOnBackground(true);
+
+            ApplyMediationSettings();
+
+
             bool completed = false;
             MobileAds.Initialize((status) =>
             {
@@ -82,6 +86,20 @@ namespace SH.Ads.Admob
             while (!completed)
                 yield return null;
         }
+
+        private void ApplyMediationSettings()
+        {
+#if MediationAdmobUnity
+            GoogleMobileAds.Mediation.UnityAds.Api.UnityAds.SetConsentMetaData("gdpr.consent", AdSettings.GDPRConcent);
+            GoogleMobileAds.Mediation.UnityAds.Api.UnityAds.SetConsentMetaData("privacy.consent", AdSettings.CCPAConsent);
+#endif
+#if MediationAdmobAppLovin
+            GoogleMobileAds.Mediation.AppLovin.Api.AppLovin.SetHasUserConsent(AdSettings.CCPAConsent);
+            GoogleMobileAds.Mediation.AppLovin.Api.AppLovin.SetIsAgeRestrictedUser(AdSettings.IsForChildren);
+            GoogleMobileAds.Mediation.AppLovin.Api.AppLovin.SetDoNotSell(AdSettings.GDPRConcent);
+#endif
+        }
+
         // Start is called before the first frame update
 
         void SetupUMPForm()

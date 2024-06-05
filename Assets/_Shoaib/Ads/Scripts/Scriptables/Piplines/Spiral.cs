@@ -19,7 +19,7 @@ namespace SH.Ads.Piplines
                     return;
             }
 
-            if (adType == AdType.Rewarded || adType == AdType.RewardedInterstial)
+            if (adType == AdType.Rewarded || adType == AdType.RewardedInterstitial)
                 BaseAdHandler.AdNotAvailble();
         }
     }

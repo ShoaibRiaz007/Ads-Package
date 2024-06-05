@@ -17,18 +17,9 @@ namespace SH.Ads
 
         static int CurrentPanelIndex { get => EditorPrefs.GetInt("Wellcome_Current_Panel", 0); set => EditorPrefs.SetInt("Wellcome_Current_Panel", value); }
 
-        static IWindow[] AllWindows = new IWindow[]
-        {
-            new AddAdvertiser(),
-            new SelectPipline(),
-            new ManageAdvertiser(),
-            new InstallPackage(),
-            new DeletePackage(),
-            new AdOns(),
-            new AboutMe(),
-        };
+        static ITab[] AllWindows;
 
-        static IWindow currentWindow = null;
+        static ITab currentWindow = null;
 
         [MenuItem("SH/Ad Manager")]
         public static void ShowWindow()
@@ -42,6 +33,7 @@ namespace SH.Ads
         private void OnEnable()
         {
             Init();
+            AllWindows = Extensions.GetInstanceOfAllSubClasses<ITab>().ToArray();
             currentWindow = AllWindows[CurrentPanelIndex];
             currentWindow.OnEnable(AdSetting);
            
@@ -69,10 +61,10 @@ namespace SH.Ads
             EditorGUILayout.EndVertical();
         }
 
-        void AddContentItem(IWindow window,int index)
+        void AddContentItem(ITab window,int index)
         {
-            if (GUILayout.Button(new GUIContent(window.Name, window.ToolTip), new GUIStyle(EditorStyles.toolbarButton) { margin = new RectOffset(5, 5, 5, 5), fixedHeight = 30, alignment = TextAnchor.MiddleLeft, normal={ scaledBackgrounds = { }}, onHover = {  textColor = Color.magenta} }))
-            {
+            if (GUILayout.Button(window.Title, new GUIStyle(EditorStyles.toolbarButton) { margin = new RectOffset(5, 5, 5, 5), fixedHeight = 30, alignment = TextAnchor.MiddleLeft, normal = { textColor = (CurrentPanelIndex == index ? Color.green : Color.black) } }))
+            { 
                 currentWindow = window;
                 currentWindow.OnEnable(AdSetting);
                 CurrentPanelIndex = index;
@@ -135,7 +127,7 @@ namespace SH.Ads
             }
         }
 
-        internal static void ShowPanel<T>() where T : IWindow
+        internal static void ShowPanel<T>() where T : ITab
         {
            foreach(var t in AllWindows)
             {

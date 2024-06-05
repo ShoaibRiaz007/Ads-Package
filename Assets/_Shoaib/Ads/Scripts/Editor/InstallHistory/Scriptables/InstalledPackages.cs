@@ -325,7 +325,7 @@ namespace SH.Ads.Editor
             if (!HasPackage(packageID))
                 return;
 
-            AdvertiserEditorWindow.ShowPanel<DeletePackage>();
+           //AdvertiserEditorWindow.ShowPanel<DeletePackage>();
         }
     }
 }
